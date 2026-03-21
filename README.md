@@ -1,0 +1,2 @@
+# lucrari-app
+Lista lucrari
