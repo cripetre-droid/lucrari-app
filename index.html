@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0369a1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lucrări" />  <title>Evidență Lucrări</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #0f172a;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --muted2: #94a3b8;
+      --blue: #0ea5e9;
+      --blue-dark: #0369a1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --indigo: #6366f1;
+      --teal: #10b981;
+      --red: #ef4444;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; }
+    button { font-family: 'Barlow', sans-serif; cursor: pointer; }
+    input, textarea, select { font-family: 'Barlow', sans-serif; }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      background: linear-gradient(160deg, #0f172a 0%, #0c1e35 100%);
+    }
+    .login-logo { font-size: 48px; margin-bottom: 12px; }
+    .login-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 36px; letter-spacing: 0.5px; }
+    .login-card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .login-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+    .login-input {
+      width: 100%; padding: 11px 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--surface2);
+      color: var(--text); font-size: 15px; outline: none; margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: var(--blue); }
+    .login-btn {
+      width: 100%; padding: 13px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: #fff; font-size: 15px; font-weight: 700;
+      box-shadow: 0 4px 16px rgba(14,165,233,0.35);
+      transition: opacity 0.2s;
+    }
+    .login-btn:active { opacity: 0.85; }
+    .login-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 12px; min-height: 20px; }
+
+    /* ── APP ── */
+    #app { display: none; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 90px; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      padding: 44px 20px 20px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .header-label { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.65); text-transform: uppercase; margin-bottom: 2px; }
+    .header-title { font-size: 22px; font-weight: 800; color: #fff; }
+    .logout-btn { background: rgba(255,255,255,0.15); border: none; border-radius: 8px; padding: 6px 10px; color: #fff; font-size: 12px; font-weight: 600; }
+    .filter-row { margin-top: 14px; display: flex; gap: 6px; }
+    .filter-btn { flex: 1; padding: 7px 0; border-radius: 8px; border: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+    .filter-btn.active { background: #fff; color: var(--blue-dark); }
+    .filter-btn:not(.active) { background: rgba(255,255,255,0.18); color: #fff; }
+
+    /* Search + sort row */
+    .search-row { padding: 14px 16px 0; }
+    .search-wrap { position: relative; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; }
+    .search-input {
+      width: 100%; padding: 10px 12px 10px 34px; border-radius: 10px;
+      border: 1.5px solid #1e3a5f; background: var(--surface);
+      color: var(--text); font-size: 14px; outline: none;
+    }
+    .meta-row { padding: 10px 16px 4px; display: flex; align-items: center; justify-content: space-between; }
+    .count-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .sort-btn { display: flex; align-items: center; gap: 5px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px; padding: 5px 10px; color: var(--muted2); font-weight: 700; font-size: 11px; }
+    .sort-arrow { font-size: 13px; display: inline-block; transition: transform 0.2s; }
+
+    /* List */
+    .list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+    .empty { text-align: center; padding: 48px 0; color: var(--border); }
+    .empty-icon { font-size: 40px; }
+    .card {
+      background: var(--surface); border-radius: 14px; padding: 14px 16px;
+      cursor: pointer; border-left: 4px solid transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: transform 0.12s;
+    }
+    .card:active { transform: scale(0.98); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .card-name { font-weight: 700; font-size: 15px; flex: 1; line-height: 1.3; }
+    .inst-badge { border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700; white-space: nowrap; margin-top: 2px; color: #fff; }
+    .card-meta { margin-top: 6px; display: flex; gap: 10px; font-size: 12px; color: var(--muted2); flex-wrap: wrap; }
+    .card-bottom { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .stadiu-badge { border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+    .inf-btn { display: inline-block; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--muted2); font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 11px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .inf-active { border-color: var(--blue); background: rgba(14,165,233,0.15); color: var(--blue); }
+  .card-obs { font-size: 11px; color: #475569; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-item { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 10px; padding: 10px 12px; cursor: pointer; border-left: 4px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .row-item:active { opacity: 0.8; }
+  .row-name { flex: 1; font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-date { font-size: 11px; color: var(--muted2); flex-shrink: 0; }
+
+    /* FAB */
+    .fab {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: #fff; border: none; border-radius: 20px; padding: 14px 28px;
+      font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.5); z-index: 20; white-space: nowrap;
+    }
+    .fab-plus { font-size: 20px; line-height: 1; }
+
+    /* Modal backdrop */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+      z-index: 30; display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal {
+      background: var(--surface); border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 430px; padding: 20px 20px 36px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+    .modal-title { font-weight: 800; font-size: 18px; margin-bottom: 18px; }
+
+    /* Detail modal */
+    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .detail-name { font-weight: 800; font-size: 18px; margin-top: 6px; line-height: 1.3; }
+    .detail-row { margin-bottom: 12px; border-bottom: 1px solid var(--surface2); padding-bottom: 12px; }
+    .detail-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+    .detail-val { font-size: 14px; color: #cbd5e1; }
+    .detail-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .btn-edit { flex: 1; padding: 11px 0; border-radius: 10px; border: 1.5px solid var(--border); background: transparent; color: var(--muted2); font-weight: 600; font-size: 13px; }
+    .btn-finalize { flex: 1; padding: 11px 0; border-radius: 10px; border: none; background: var(--green); color: #fff; font-weight: 700; font-size: 13px; }
+    .btn-delete { padding: 11px 16px; border-radius: 10px; border: none; background: var(--red); color: #fff; font-weight: 700; font-size: 13px; }
+
+    /* Form */
+    .form-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+    .form-input {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--surface2);
+      color: var(--text); font-size: 14px; outline: none; margin-bottom: 14px;
+    }
+    .form-input:focus { border-color: var(--blue); }
+    .form-textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text); font-size: 14px; outline: none; resize: vertical; margin-bottom: 20px; }
+    .toggle-row { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .toggle-btn { padding: 7px 13px; border-radius: 8px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-weight: 700; font-size: 12px; transition: all 0.15s; }
+    .toggle-btn.sel-blue { border-color: var(--blue); background: rgba(14,165,233,0.12); color: var(--blue); }
+    .toggle-btn.sel-ar { border-color: var(--blue); background: rgba(14,165,233,0.12); color: var(--blue); }
+    .toggle-btn.sel-apm { border-color: var(--teal); background: rgba(16,185,129,0.12); color: var(--teal); }
+    .toggle-btn.sel-lucru { border-color: var(--amber); background: rgba(245,158,11,0.12); color: var(--amber); }
+    .toggle-btn.sel-final { border-color: var(--green); background: rgba(34,197,94,0.12); color: var(--green); }
+    .toggle-btn.sel-alt { border-color: var(--indigo); background: rgba(99,102,241,0.12); color: var(--indigo); }
+    .date-wrap { position: relative; margin-bottom: 14px; }
+    .date-wrap .form-input { margin-bottom: 0; padding-right: 44px; }
+    .date-icon-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+    .date-picker-hidden { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0; width: 28px; height: 28px; cursor: pointer; border: none; background: transparent; color-scheme: dark; }
+    .form-actions { display: flex; gap: 10px; }
+    .btn-cancel { flex: 1; padding: 13px 0; border-radius: 10px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; }
+    .btn-save { flex: 2; padding: 13px 0; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: #fff; font-weight: 700; font-size: 14px; }
+    .nr-wrap { position: relative; margin-bottom: 14px; }
+    .nr-wrap .form-input { margin-bottom: 0; }
+    .nr-prefill { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: var(--blue); color: #fff; border: none; border-radius: 6px; padding: 4px 8px; font-size: 10px; font-weight: 700; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 48px 0; color: var(--muted); font-size: 14px; }
+
+    /* Spinner */
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-logo">📋</div>
+  <div class="login-title">Evidență Lucrări</div>
+  <div class="login-sub">Apele Române · A.P.M.</div>
+  <div class="login-card">
+    <label class="login-label">Email</label>
+    <input class="login-input" id="login-email" type="email" placeholder="admin@email.com" autocomplete="email" />
+    <label class="login-label">Parolă</label>
+    <input class="login-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Intră în cont</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-label">Evidență Lucrări</div>
+        <div class="header-title">Dosare Depuse</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Ieșire ↩</button>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" id="fb-active" onclick="setFilter('active')">Active</button>
+      <button class="filter-btn" id="fb-toate" onclick="setFilter('toate')">Toate</button>
+      <button class="filter-btn" id="fb-finalizate" onclick="setFilter('finalizate')">Finalizate</button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input" placeholder="Caută după beneficiar…" oninput="renderList()" />
+    </div>
+  </div>
+
+  <!-- Inspector filter -->
+  <div style="padding: 8px 16px 0; display: flex; flex-wrap: wrap; gap: 6px;">
+    <button onclick="setInspFilter('')" id="if-all" class="inf-btn inf-active">Toți</button>
+    <button onclick="setInspFilter('ES')" id="if-ES" class="inf-btn">ES</button>
+    <button onclick="setInspFilter('MM')" id="if-MM" class="inf-btn">MM</button>
+    <button onclick="setInspFilter('ON')" id="if-ON" class="inf-btn">ON</button>
+    <button onclick="setInspFilter('ONN')" id="if-ONN" class="inf-btn">ONN</button>
+    <button onclick="setInspFilter('AB')" id="if-AB" class="inf-btn">AB</button>
+    <button onclick="setInspFilter('ABB')" id="if-ABB" class="inf-btn">ABB</button>
+    <button onclick="setInspFilter('CTUD')" id="if-CTUD" class="inf-btn">CTUD</button>
+    <button onclick="setInspFilter('GP')" id="if-GP" class="inf-btn">GP</button>
+    <button onclick="setInspFilter('RN')" id="if-RN" class="inf-btn">RN</button>
+    <button onclick="setInspFilter('ANCA')" id="if-ANCA" class="inf-btn">ANCA</button>
+    <button onclick="setInspFilter('MC')" id="if-MC" class="inf-btn">MC</button>
+    <button onclick="setInspFilter('Altul')" id="if-Altul" class="inf-btn">Altul</button>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-row">
+    <span class="count-label" id="count-label">0 înregistrări</span>
+    <button class="sort-btn" onclick="toggleSort()">
+      <span class="sort-arrow" id="sort-arrow">↓</span>
+      <span id="sort-label">Recente primele</span>
+    </button>
+    <button class="sort-btn" onclick="toggleView()" style="margin-left:4px">
+      <span id="view-icon">☰</span>
+    </button>
+    <button class="sort-btn" onclick="exportTxt()" style="margin-left:4px" title="Export TXT">
+      ⬇️ TXT
+    </button>
+  </div>
+
+  <!-- List -->
+  <div class="list" id="list"></div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="openForm()">
+    <span class="fab-plus">+</span> Înregistrare nouă
+  </button>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="detail-modal" style="display:none" onclick="closeDetail(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- FORM MODAL -->
+<div class="modal-bg" id="form-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="form-title">Înregistrare nouă</div>
+
+    <label class="form-label">Instituție</label>
+    <div class="toggle-row" id="inst-row"></div>
+
+    <label class="form-label">Beneficiar *</label>
+    <input class="form-input" id="f-beneficiar" placeholder="Denumire beneficiar" />
+
+    <label class="form-label">Nr. înregistrare</label>
+    <div class="nr-wrap">
+      <input class="form-input" id="f-nr" placeholder="ex. AR-2024-001" />
+      <button class="nr-prefill" id="nr-prefill-btn" style="display:none" onclick="prefillNr()"></button>
+    </div>
+
+    <label class="form-label">Data *</label>
+    <div class="date-wrap">
+      <input class="form-input" id="f-data" placeholder="zz/ll/aaaa" maxlength="10" oninput="onDataInput(this)" autocomplete="off" />
+      <div class="date-icon-btn" onclick="document.getElementById('f-data-picker').showPicker ? document.getElementById('f-data-picker').showPicker() : document.getElementById('f-data-picker').click()">📅</div>
+      <input type="date" id="f-data-picker" onchange="onPickerChange(this)" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;" />
+    </div>
+
+    <label class="form-label">Inspector *</label>
+    <div class="toggle-row" id="insp-row"></div>
+    <input class="form-input" id="f-insp-alt" placeholder="Specificați inspectorul" style="display:none" />
+
+    <label class="form-label">Stadiu</label>
+    <div class="toggle-row" id="stadiu-row"></div>
+    <input class="form-input" id="f-stadiu-alt" placeholder="Specificați stadiul" style="display:none" />
+
+    <label class="form-label">Observații</label>
+    <textarea class="form-textarea" id="f-observatii" rows="3" placeholder="Observații suplimentare…"></textarea>
+
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeForm()">Anulează</button>
+      <button class="btn-save" id="save-btn" onclick="saveRecord()">Adaugă lucrarea</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  ⚠️  ÎNLOCUIEȘTE ACESTE 2 VALORI CU ALE TALE
+// ══════════════════════════════════════════════
+const SUPABASE_URL = 'https://rcwuwowpthrfcrdkaqcg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjd3V3b3dwdGhyZmNyZGthcWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTMxMTEsImV4cCI6MjA4OTU2OTExMX0.048g1HLPSGZo5GlskIV6yUZ_-pPcBMBbV83FmNsHyw0';
+// ══════════════════════════════════════════════
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const INSPECTORS = ["ES","MM","ON","ONN","AB","ABB","CTUD","GP","RN","ANCA","MC","Altul"];
+const STADII = ["În lucru","Finalizat","Altul"];
+const INSTITUTII = ["Apele Romane","A.P.M."];
+
+let records = [];
+let currentFilter = 'active';
+let sortDir = 'desc';
+let viewMode = 'card'; // 'card' sau 'compact'
+let inspectorFilter = '';
+let editId = null;
+let formInst = 'Apele Romane';
+let formInsp = '';
+let formStadiu = 'În lucru';
+
+// ── HELPERS ──────────────────────────────────
+function dmyToIso(dmy) {
+  if (!dmy || dmy.length < 10) return '';
+  const [d,m,y] = dmy.split('/');
+  if (!d||!m||!y||y.length<4) return '';
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+function isoToDmy(iso) {
+  if (!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function dateKey(dmy) {
+  if (!dmy) return 0;
+  const [d,m,y] = dmy.split('/');
+  if (!d||!m||!y) return 0;
+  return parseInt(`${y}${m.padStart(2,'0')}${d.padStart(2,'0')}`,10);
+}
+function stadiuColor(s) {
+  if (s==='Finalizat') return '#22c55e';
+  if (s==='În lucru') return '#f59e0b';
+  return '#6366f1';
+}
+function instColor(i) { return i==='Apele Romane'?'#0ea5e9':'#10b981'; }
+function instShort(i) { return i==='Apele Romane'?'AR':'APM'; }
+function displayStadiu(r) { return r.stadiu==='Altul'?(r.stadiu_alt||'Altul'):r.stadiu; }
+function displayInsp(r) { return r.inspector==='Altul'?(r.inspector_alt||'—'):r.inspector; }
+
+// ── AUTH ─────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  err.textContent = '';
+  btn.innerHTML = '<span class="spinner"></span>Se conectează…';
+  btn.disabled = true;
+
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    err.textContent = 'Email sau parolă incorectă.';
+    btn.innerHTML = 'Intră în cont';
+    btn.disabled = false;
+  } else {
+    showApp();
+  }
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-btn').innerHTML = 'Intră în cont';
+  document.getElementById('login-btn').disabled = false;
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) showApp();
+});
+
+async function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await loadRecords();
+}
+
+// ── OFFLINE / CACHE ────────────────────────────
+const CACHE_KEY = 'lucrari_cache';
+const QUEUE_KEY = 'lucrari_queue';
+
+function saveCache(d) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)); } catch(_){} }
+function loadCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)||'[]'); } catch(_){ return []; } }
+function loadQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]'); } catch(_){ return []; } }
+function saveQueue(q) { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch(_){} }
+function enqueue(op) { const q=loadQueue(); q.push(op); saveQueue(q); }
+
+function showOfflineBanner(show) {
+  let b = document.getElementById('offline-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'offline-banner';
+    b.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;background:#f59e0b;color:#000;text-align:center;padding:8px 12px;font-size:12px;font-weight:700;z-index:100;';
+    document.body.appendChild(b);
+  }
+  b.style.display = show ? 'block' : 'none';
+  b.textContent = '⚠️ Offline — modificările se salvează local și se vor sincroniza când revine internetul';
+}
+window.addEventListener('online',  () => { showOfflineBanner(false); syncQueue(); });
+window.addEventListener('offline', () => showOfflineBanner(true));
+
+async function syncQueue() {
+  const q = loadQueue();
+  if (!q.length) return;
+  const remaining = [];
+  for (const op of q) {
+    let err = null;
+    if (op.type === 'insert') {
+      const tempId = op.data.id;
+      const {id: _omit, ...payload} = op.data;
+      const res = await sb.from('lucrari').insert([payload]).select();
+      err = res.error;
+      if (!err && res.data) {
+        records = records.map(r => r.id === tempId ? res.data[0] : r);
+        saveCache(records); renderList();
+      }
+    } else if (op.type === 'update') {
+      const {id, ...payload} = op.data;
+      const res = await sb.from('lucrari').update(payload).eq('id', id);
+      err = res.error;
+    } else if (op.type === 'delete') {
+      const res = await sb.from('lucrari').delete().eq('id', op.id);
+      err = res.error;
+    }
+    if (err) remaining.push(op);
+  }
+  saveQueue(remaining);
+  if (!remaining.length) {
+    const {data} = await sb.from('lucrari').select('*');
+    if (data) { records = data; saveCache(records); renderList(); }
+  }
+}
+
+// ── DATA ─────────────────────────────────────────────
+async function loadRecords() {
+  const cached = loadCache();
+  if (cached.length) {
+    records = cached; renderList();
+  } else {
+    document.getElementById('list').innerHTML = '<div class="loading">Se încărcă…</div>';
+  }
+  if (!navigator.onLine) { showOfflineBanner(true); return; }
+  const {data, error} = await sb.from('lucrari').select('*');
+  if (!error && data) { records = data; saveCache(records); renderList(); }
+  await syncQueue();
+}
+
+// ── RENDER ────────────────────────────────────
+function getFiltered() {
+  let res = [...records];
+  if (currentFilter === 'active')     res = res.filter(r => r.stadiu !== 'Finalizat');
+  if (currentFilter === 'finalizate') res = res.filter(r => r.stadiu === 'Finalizat');
+  const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+  if (q) res = res.filter(r => r.beneficiar.toLowerCase().includes(q));
+  if (inspectorFilter) {
+    if (inspectorFilter === 'Altul') {
+      res = res.filter(r => !['ES','MM','ON','ONN','AB','ABB','CTUD','GP','RN','ANCA','MC'].includes(r.inspector));
+    } else {
+      res = res.filter(r => r.inspector === inspectorFilter);
+    }
+  }
+  res.sort((a, b) => sortDir === 'desc'
+    ? dateKey(b.data) - dateKey(a.data)
+    : dateKey(a.data) - dateKey(b.data));
+  return res;
+}
+
+function renderList() {
+  const list = document.getElementById('list');
+  const data = getFiltered();
+  const n = data.length;
+  document.getElementById('count-label').textContent = `${n} ${n===1?'înregistrare':'înregistrări'}`;
+
+  if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">📂</div><div style="margin-top:8px;font-size:14px">Nicio înregistrare</div></div>'; return; }
+
+  if (viewMode === 'compact') {
+    list.innerHTML = data.map(r => `
+      <div class="row-item" style="border-left-color:${stadiuColor(r.stadiu)}" onclick="openDetail('${r.id}')">
+        <span class="inst-badge" style="background:${instColor(r.institutie)};flex-shrink:0">${instShort(r.institutie)}</span>
+        <span class="row-name">${r.beneficiar}</span>
+        <span class="row-date">${r.data||'—'}</span>
+        <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)};flex-shrink:0">${displayStadiu(r)}</span>
+      </div>`).join('');
+  } else {
+    list.innerHTML = data.map(r => `
+      <div class="card" style="border-left-color:${stadiuColor(r.stadiu)}" onclick="openDetail('${r.id}')">
+        <div class="card-top">
+          <div class="card-name">${r.beneficiar}</div>
+          <span class="inst-badge" style="background:${instColor(r.institutie)}">${instShort(r.institutie)}</span>
+        </div>
+        <div class="card-meta">
+          <span>📋 ${r.nr_inregistrare||'—'}</span>
+          <span>📅 ${r.data||'—'}</span>
+          <span>👤 ${displayInsp(r)}</span>
+        </div>
+        <div class="card-bottom">
+          <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)}">${displayStadiu(r)}</span>
+          ${r.observatii?`<span class="card-obs">${r.observatii}</span>`:''}
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ── FILTER / SORT ─────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  ['active','toate','finalizate'].forEach(x=>{
+    document.getElementById('fb-'+x).className = 'filter-btn'+(f===x?' active':'');
+  });
+  renderList();
+}
+
+function toggleSort() {
+  sortDir = sortDir==='desc'?'asc':'desc';
+  document.getElementById('sort-arrow').style.transform = sortDir==='asc'?'rotate(180deg)':'rotate(0deg)';
+  document.getElementById('sort-label').textContent = sortDir==='desc'?'Recente primele':'Vechi primele';
+  renderList();
+}
+
+// -- VIEW MODE ----------------------------------------
+function toggleView() {
+  viewMode = viewMode === 'card' ? 'compact' : 'card';
+  document.getElementById('view-icon').textContent = viewMode === 'card' ? '☰' : '⊞';
+  renderList();
+}
+
+// -- INSPECTOR FILTER --------------------------------
+function setInspFilter(val) {
+  inspectorFilter = val;
+  const ids = ['', 'ES','MM','ON','ONN','AB','ABB','CTUD','GP','RN','ANCA','MC','Altul'];
+  ids.forEach(id => {
+    const el = document.getElementById('if-' + (id || 'all'));
+    if (el) el.className = 'inf-btn' + (id === val ? ' inf-active' : '');
+  });
+  renderList();
+}
+
+// -- DETAIL ────────────────────────────────────
+function openDetail(id) {
+  const r = records.find(x=>x.id===id);
+  if (!r) return;
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-header">
+      <div>
+        <span class="inst-badge" style="background:${instColor(r.institutie)};display:inline-block">${r.institutie}</span>
+        <div class="detail-name">${r.beneficiar}</div>
+      </div>
+      <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)}">${displayStadiu(r)}</span>
+    </div>
+    <div class="detail-row"><div class="detail-label">📋 Nr. înregistrare</div><div class="detail-val">${r.nr_inregistrare||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">📅 Data</div><div class="detail-val">${r.data||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">👤 Inspector</div><div class="detail-val">${displayInsp(r)}</div></div>
+    <div class="detail-row"><div class="detail-label">💬 Observații</div><div class="detail-val">${r.observatii||'—'}</div></div>
+    <div class="detail-actions">
+      <button class="btn-edit" onclick="openForm('${r.id}')">✏️ Editează</button>
+      ${r.stadiu!=='Finalizat'?`<button class="btn-finalize" onclick="finalizeRecord('${r.id}')">✅ Finalizează</button>`:''}
+      <button class="btn-delete" onclick="deleteRecord('${r.id}')">🗑️</button>
+    </div>`;
+  document.getElementById('detail-modal').style.display='flex';
+}
+
+function closeDetail(e) {
+  if (!e || e.target===document.getElementById('detail-modal'))
+    document.getElementById('detail-modal').style.display='none';
+}
+
+async function finalizeRecord(id) {
+  const update = {stadiu:'Finalizat',stadiu_alt:''};
+  records = records.map(r=>r.id===id?{...r,...update}:r);
+  saveCache(records); renderList();
+  document.getElementById('detail-modal').style.display='none';
+  if (navigator.onLine) {
+    await sb.from('lucrari').update(update).eq('id',id);
+  } else {
+    enqueue({type:'update', data:{id,...update}});
+  }
+}
+
+async function deleteRecord(id) {
+  if (!confirm('Ești sigur că vrei să ștergi această înregistrare?')) return;
+  records = records.filter(r=>r.id!==id);
+  saveCache(records); renderList();
+  document.getElementById('detail-modal').style.display='none';
+  if (navigator.onLine) {
+    await sb.from('lucrari').delete().eq('id',id);
+  } else {
+    enqueue({type:'delete', id});
+  }
+}
+
+// ── FORM ──────────────────────────────────────
+function buildToggleRow(containerId, items, current, getSelClass, onSelect) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(item=>`
+    <button class="toggle-btn ${item===current?getSelClass(item):''}" onclick="(${onSelect.toString()})('${item}')">${item}</button>
+  `).join('');
+}
+
+function openForm(id=null) {
+  document.getElementById('detail-modal').style.display='none';
+  editId = id;
+  const r = id ? records.find(x=>x.id===id) : null;
+
+  formInst  = r ? r.institutie  : 'Apele Romane';
+  formInsp  = r ? r.inspector   : '';
+  formStadiu= r ? r.stadiu      : 'În lucru';
+
+  document.getElementById('form-title').textContent = id ? 'Editează lucrarea' : 'Înregistrare nouă';
+  document.getElementById('f-beneficiar').value = r?.beneficiar||'';
+  document.getElementById('f-nr').value = r?.nr_inregistrare||'';
+  document.getElementById('f-data').value = r?.data||'';
+  document.getElementById('f-insp-alt').value = r?.inspector_alt||'';
+  document.getElementById('f-stadiu-alt').value = r?.stadiu_alt||'';
+  document.getElementById('f-observatii').value = r?.observatii||'';
+  document.getElementById('save-btn').textContent = id ? 'Salvează modificările' : 'Adaugă lucrarea';
+
+  // Nr prefill
+  const lastNr = records.length ? records[records.length-1].nr_inregistrare : '';
+  const prefBtn = document.getElementById('nr-prefill-btn');
+  if (lastNr && !id) { prefBtn.style.display='block'; prefBtn.textContent=`↩ ${lastNr}`; prefBtn._val=lastNr; }
+  else prefBtn.style.display='none';
+
+  renderInstRow();
+  renderInspRow();
+  renderStadiuRow();
+
+  document.getElementById('form-modal').style.display='flex';
+}
+
+function prefillNr() {
+  const btn = document.getElementById('nr-prefill-btn');
+  document.getElementById('f-nr').value = btn._val||'';
+}
+
+function renderInstRow() {
+  const el = document.getElementById('inst-row');
+  el.innerHTML = INSTITUTII.map(inst => {
+    const selClass = inst === formInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '';
+    return `<button class="toggle-btn ${selClass}" style="flex:1" onclick="selectInst('${inst}')">${inst}</button>`;
+  }).join('');
+}
+function selectInst(i) { formInst = i; renderInstRow(); }
+
+function renderInspRow() {
+  const el = document.getElementById('insp-row');
+  el.innerHTML = INSPECTORS.map(ins=>`
+    <button class="toggle-btn ${ins===formInsp?'sel-blue':''}" onclick="selectInsp('${ins}')">${ins}</button>
+  `).join('');
+  document.getElementById('f-insp-alt').style.display = formInsp==='Altul'?'block':'none';
+}
+function selectInsp(i) { formInsp=i; renderInspRow(); }
+
+function renderStadiuRow() {
+  const el = document.getElementById('stadiu-row');
+  el.innerHTML = STADII.map(s=>{
+    let sc = '';
+    if (s===formStadiu) sc = s==='În lucru'?'sel-lucru':s==='Finalizat'?'sel-final':'sel-alt';
+    return `<button class="toggle-btn ${sc}" style="flex:1" onclick="selectStadiu('${s}')">${s}</button>`;
+  }).join('');
+  document.getElementById('f-stadiu-alt').style.display = formStadiu==='Altul'?'block':'none';
+}
+function selectStadiu(s) { formStadiu=s; renderStadiuRow(); }
+
+function closeForm() { document.getElementById('form-modal').style.display='none'; editId=null; }
+
+function onDataInput(el) {
+  let v = el.value.replace(/[^\d/]/g,'');
+  const prev = el._prev||'';
+  if (v.length===2 && prev.length===1) v=v+'/';
+  if (v.length===5 && prev.length===4) v=v+'/';
+  if (v.length<=10) el.value=v;
+  el._prev=el.value;
+}
+function onPickerChange(el) {
+  document.getElementById('f-data').value = isoToDmy(el.value);
+  document.getElementById('f-data')._prev = isoToDmy(el.value);
+}
+
+async function saveRecord() {
+  const beneficiar = document.getElementById('f-beneficiar').value.trim();
+  const dataVal    = document.getElementById('f-data').value.trim();
+  const inspector  = formInsp;
+
+  const errors = [];
+  if (!beneficiar) errors.push('Beneficiarul este obligatoriu.');
+  if (!dataVal) errors.push('Data este obligatorie.');
+  if (!inspector) errors.push('Inspectorul este obligatoriu.');
+  if (errors.length) { alert(errors.join('\n')); btn.disabled=false; btn.textContent=editId?'Salveaz\u0103 modific\u0103rile':'Adaug\u0103 lucrarea'; return; }
+
+  const payload = {
+    institutie:      formInst,
+    beneficiar,
+    nr_inregistrare: document.getElementById('f-nr').value.trim(),
+    data:            dataVal,
+    inspector,
+    inspector_alt:   document.getElementById('f-insp-alt').value.trim(),
+    stadiu:          formStadiu,
+    stadiu_alt:      document.getElementById('f-stadiu-alt').value.trim(),
+    observatii:      document.getElementById('f-observatii').value.trim(),
+  };
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Salvează…';
+
+  const isEdit = !!editId;
+
+  if (isEdit) {
+    const currentId = editId;
+    records = records.map(r=>r.id===currentId?{...r,...payload}:r);
+    saveCache(records);
+    if (navigator.onLine) {
+      const {error} = await sb.from('lucrari').update(payload).eq('id',currentId);
+      if (error) console.error('Update error:', error);
+    } else {
+      enqueue({type:'update', data:{...payload, id:currentId}});
+    }
+  } else {
+    const tempId = 'tmp_' + Date.now();
+    const newRec = {...payload, id: tempId};
+    records.push(newRec);
+    saveCache(records);
+    if (navigator.onLine) {
+      const {data:inserted, error} = await sb.from('lucrari').insert([payload]).select();
+      if (error) {
+        console.error('Insert error:', error);
+      } else if (inserted && inserted[0]) {
+        records = records.map(r=>r.id===tempId?inserted[0]:r);
+        saveCache(records);
+      }
+    } else {
+      enqueue({type:'insert', data:newRec});
+    }
+  }
+
+  btn.disabled=false;
+  btn.textContent = isEdit?'Salvează modificările':'Adaugă lucrarea';
+  document.getElementById('form-modal').style.display='none';
+  editId=null;
+  console.log('records after save:', records.length, JSON.stringify(records.slice(-1)));
+  renderList();
+}
+
+// -- EXPORT ------------------------------------------
+function exportTxt() {
+  const data = getFiltered();
+  if (!data.length) { alert('Nu exista inregistrari de exportat.'); return; }
+
+  const filterLabel = currentFilter === 'active' ? 'Active' : currentFilter === 'finalizate' ? 'Finalizate' : 'Toate';
+  const inspLabel = inspectorFilter ? ' | Inspector: ' + inspectorFilter : '';
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const yyyy = now.getFullYear();
+  const dateStr = dd + '/' + mm + '/' + yyyy;
+
+  const lines = [];
+  lines.push('================================================');
+  lines.push('         EVIDENTA LUCRARI');
+  lines.push('================================================');
+  lines.push('Exportat: ' + dateStr);
+  lines.push('Filtru: ' + filterLabel + inspLabel);
+  lines.push('Total: ' + data.length + ' inregistrari');
+  lines.push('================================================');
+  lines.push('');
+
+  data.forEach(function(r, i) {
+    lines.push('[' + (i+1) + '] ' + r.beneficiar);
+    lines.push('    Institutie     : ' + r.institutie);
+    lines.push('    Nr. inreg.     : ' + (r.nr_inregistrare || '-'));
+    lines.push('    Data           : ' + (r.data || '-'));
+    lines.push('    Inspector      : ' + displayInsp(r));
+    lines.push('    Stadiu         : ' + displayStadiu(r));
+    if (r.observatii) lines.push('    Observatii     : ' + r.observatii);
+    lines.push('');
+  });
+
+  lines.push('================================================');
+  lines.push('Total: ' + data.length + ' inregistrari exportate');
+  lines.push('================================================');
+
+  const txt = lines.join('\n');
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lucrari_' + dd + '-' + mm + '-' + yyyy + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+// Init
+(async()=>{
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) showApp();
+})();
+
+// Înregistrare Service Worker (necesar pentru instalare PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW înregistrat:', reg.scope))
+      .catch(err => console.log('SW eroare:', err));
+  });
+}
+</script>
+</body>
+</html>
