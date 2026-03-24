@@ -72,7 +72,7 @@
     .login-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 12px; min-height: 20px; }
 
     /* ── APP ── */
-    #app { display: none; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 90px; }
+    #app { display: none; max-width: 430px; margin: 0 auto; position: relative; }
 
     /* Header */
     .header {
@@ -266,7 +266,7 @@
     <button class="main-tab" id="tab-autorizatii" onclick="switchTab('autorizatii')">🏛️ Autorizații</button>
   </div>
 
-  <div id="section-lucrari">
+  <div id="section-lucrari" style="min-height:100vh;padding-bottom:90px">
   <!-- Search -->
   <div class="search-row">
     <div class="search-wrap">
@@ -318,7 +318,7 @@
   </div><!-- /section-lucrari -->
 
   <!-- AUTORIZATII SECTION -->
-  <div id="section-autorizatii" style="display:none;padding-top:4px">
+  <div id="section-autorizatii" style="display:none;padding-top:4px;padding-bottom:90px;min-height:60vh">
     <div id="auth-notifs"></div>
     <div class="search-row" style="padding-top:8px">
       <div class="search-wrap">
