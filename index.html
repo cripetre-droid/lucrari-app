@@ -198,34 +198,31 @@
 
     /* ── TABS ── */
     .main-tabs { display: flex; background: #0c1829; border-bottom: 2px solid #1e3a5f; }
-    .main-tab { flex: 1; padding: 12px 0; border: none; background: transparent; color: var(--muted); font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .main-tab { flex: 1; padding: 12px 0; border: none; background: transparent; color: var(--muted); font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
     .main-tab.active { color: var(--blue); border-bottom: 2px solid var(--blue); margin-bottom: -2px; }
 
     /* ── AUTORIZATII ── */
-    .auth-card { background: var(--surface); border-radius: 14px; padding: 14px 16px; cursor: pointer; border-left: 4px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: transform 0.12s; }
-    .auth-card:active { transform: scale(0.98); }
+    .auth-card { background: var(--surface); border-radius: 14px; padding: 14px 16px; cursor: pointer; border-left: 4px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .auth-card:active { opacity: 0.85; }
     .auth-name { font-weight: 700; font-size: 15px; line-height: 1.3; }
     .auth-meta { margin-top: 6px; display: flex; gap: 10px; font-size: 12px; color: var(--muted2); flex-wrap: wrap; }
     .auth-bottom { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
     .days-badge { border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 800; }
     .days-expired { background: rgba(239,68,68,0.15); color: #ef4444; }
-    .days-urgent { background: rgba(245,158,11,0.15); color: #f59e0b; }
-    .days-warning { background: rgba(234,179,8,0.15); color: #eab308; }
-    .days-ok { background: rgba(34,197,94,0.15); color: #22c55e; }
-
-    /* ── SCAN AREA ── */
-    .scan-drop { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; color: var(--muted); font-size: 13px; margin-bottom: 14px; transition: border-color 0.2s; }
+    .days-urgent  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .days-warning { background: rgba(234,179,8,0.15);  color: #eab308; }
+    .days-ok      { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .scan-drop { border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; color: var(--muted); font-size: 13px; margin-bottom: 14px; }
     .scan-drop:hover { border-color: var(--blue); color: var(--blue); }
     .scan-result { background: rgba(14,165,233,0.1); border: 1px solid var(--blue); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 13px; color: var(--muted2); }
-
-    /* ── IMPORT ── */
-    .import-btn { width: 100%; padding: 11px; border-radius: 10px; border: 1.5px dashed var(--border); background: transparent; color: var(--muted2); font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; margin-bottom: 10px; }
-
-    /* ── NOTIF BANNER ── */
-    .notif-banner { margin: 10px 16px 0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .notif-red { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .import-btn { width: 100%; padding: 11px; border-radius: 10px; border: 1.5px dashed var(--border); background: transparent; color: var(--muted2); font-weight: 600; font-size: 13px; cursor: pointer; margin-bottom: 10px; }
+    .notif-banner { margin: 8px 16px 0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .notif-red    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
     .notif-orange { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
-    .notif-yellow { background: rgba(234,179,8,0.15); color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+    .notif-yellow { background: rgba(234,179,8,0.15);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+    .key-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .key-bar span { font-size: 11px; color: var(--muted); }
+    .key-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; color: var(--blue); font-size: 11px; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -252,7 +249,7 @@
     <div class="header-top">
       <div>
         <div class="header-label">Evidență Lucrări</div>
-        <div class="header-title" id="header-title">Dosare Depuse</div>
+        <div class="header-title">Dosare Depuse</div>
       </div>
       <button class="logout-btn" onclick="doLogout()">Ieșire ↩</button>
     </div>
@@ -269,9 +266,7 @@
     <button class="main-tab" id="tab-autorizatii" onclick="switchTab('autorizatii')">🏛️ Autorizații</button>
   </div>
 
-  <!-- LUCRARI SECTION -->
   <div id="section-lucrari">
-
   <!-- Search -->
   <div class="search-row">
     <div class="search-wrap">
@@ -319,10 +314,11 @@
   <button class="fab" onclick="openForm()">
     <span class="fab-plus">+</span> Înregistrare nouă
   </button>
+</div>
   </div><!-- /section-lucrari -->
 
   <!-- AUTORIZATII SECTION -->
-  <div id="section-autorizatii" style="display:none; padding-bottom:90px">
+  <div id="section-autorizatii" style="display:none">
     <div id="auth-notifs"></div>
     <div class="search-row">
       <div class="search-wrap">
@@ -335,9 +331,9 @@
       <select id="auth-filter" onchange="renderAuth()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:5px 8px;font-family:Barlow,sans-serif;font-size:11px;font-weight:700">
         <option value="all">Toate</option>
         <option value="expired">Expirate</option>
-        <option value="15">&#x2264; 15 zile</option>
-        <option value="30">&#x2264; 30 zile</option>
-        <option value="60">&#x2264; 60 zile</option>
+        <option value="15">≤ 15 zile</option>
+        <option value="30">≤ 30 zile</option>
+        <option value="60">≤ 60 zile</option>
         <option value="ok">OK</option>
       </select>
     </div>
@@ -347,7 +343,6 @@
     </button>
   </div><!-- /section-autorizatii -->
 
-</div>
 
 <!-- DETAIL MODAL -->
 <div class="modal-bg" id="detail-modal" style="display:none" onclick="closeDetail(event)">
@@ -378,8 +373,8 @@
     <label class="form-label">Data *</label>
     <div class="date-wrap">
       <input class="form-input" id="f-data" placeholder="zz/ll/aaaa" maxlength="10" oninput="onDataInput(this)" autocomplete="off" />
-      <div class="date-icon-btn" onclick="var p=document.getElementById('f-data-picker'); var cur=p.value; p.value=''; setTimeout(function(){ p.value=cur; try{ if(p.showPicker) p.showPicker(); else p.click(); }catch(e){ p.click(); } },0)">📅</div>
-      <input type="date" id="f-data-picker" oninput="onPickerChange(this)" onchange="onPickerChange(this)" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;" />
+      <div class="date-icon-btn" onclick="document.getElementById('f-data-picker').showPicker ? document.getElementById('f-data-picker').showPicker() : document.getElementById('f-data-picker').click()">📅</div>
+      <input type="date" id="f-data-picker" onchange="onPickerChange(this)" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;" />
     </div>
 
     <label class="form-label">Inspector *</label>
@@ -781,12 +776,6 @@ function selectStadiu(s) { formStadiu=s; renderStadiuRow(); }
 
 function closeForm() { document.getElementById('form-modal').style.display='none'; editId=null; }
 
-function openDatePicker() {
-  var p = document.getElementById('f-data-picker');
-  p.value = '';
-  try { if (p.showPicker) p.showPicker(); else p.click(); } catch(e) { p.click(); }
-}
-
 function onDataInput(el) {
   let v = el.value.replace(/[^\d/]/g,'');
   const prev = el._prev||'';
@@ -913,143 +902,129 @@ function exportTxt() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-// ── AUTORIZATII ──────────────────────────────
+// ── AUTORIZATII ─────────────────────────────
+const LUNI = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
 let authRecords = [];
 let authEditId = null;
 let authInst = 'Apele Romane';
 let authLuna = 0;
 let authAn = new Date().getFullYear();
 
-const LUNI = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
-
 function daysUntilExpiry(luna, an) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const lastDay = new Date(an, luna, 0); // last day of month (luna is 1-12)
+  var today = new Date(); today.setHours(0,0,0,0);
+  var lastDay = new Date(an, luna, 0);
   return Math.ceil((lastDay - today) / 86400000);
 }
-
 function daysBadge(days) {
-  if (days < 0)  return '<span class="days-badge days-expired">Expirat de ' + Math.abs(days) + ' zile</span>';
+  if (days < 0)   return '<span class="days-badge days-expired">Expirat de ' + Math.abs(days) + ' zile</span>';
   if (days <= 15) return '<span class="days-badge days-urgent">' + days + ' zile</span>';
   if (days <= 30) return '<span class="days-badge days-urgent">' + days + ' zile</span>';
   if (days <= 60) return '<span class="days-badge days-warning">' + days + ' zile</span>';
   return '<span class="days-badge days-ok">' + days + ' zile</span>';
 }
-
 function borderColorAuth(days) {
-  if (days < 0)  return '#ef4444';
+  if (days < 0)   return '#ef4444';
   if (days <= 30) return '#f59e0b';
   if (days <= 60) return '#eab308';
   return '#22c55e';
 }
-
-// ── CLAUDE API KEY MANAGEMENT ─────────────────
-function getClaudeKey() {
-  return localStorage.getItem('claude_api_key') || '';
-}
-
+function getClaudeKey() { return localStorage.getItem('claude_api_key') || ''; }
 function promptClaudeKey() {
-  const existing = getClaudeKey();
-  const key = prompt('Introdu Claude API Key (sk-ant-...):', existing || '');
+  var existing = getClaudeKey();
+  var key = prompt('Introdu Claude API Key (sk-ant-...):', existing || '');
   if (key && key.trim().startsWith('sk-ant-')) {
     localStorage.setItem('claude_api_key', key.trim());
-    alert('✅ Cheia a fost salvată!');
+    updateKeyStatus();
+    alert('Cheia a fost salvata!');
   } else if (key !== null) {
-    alert('Cheie invalidă. Trebuie să înceapă cu sk-ant-');
+    alert('Cheie invalida.');
   }
 }
-
-// ── SWITCH TAB ─────────────────────────────────
-function switchTab(tab) {
-  const isLucrari = tab === 'lucrari';
-  document.getElementById('section-lucrari').style.display = isLucrari ? 'block' : 'none';
-  document.getElementById('section-autorizatii').style.display = isLucrari ? 'none' : 'block';
-  document.getElementById('auth-fab').style.display = isLucrari ? 'none' : 'flex';
-  document.getElementById('tab-lucrari').className = 'main-tab' + (isLucrari ? ' active' : '');
-  document.getElementById('tab-autorizatii').className = 'main-tab' + (!isLucrari ? ' active' : '');
-  document.getElementById('header-title').textContent = isLucrari ? 'Dosare Depuse' : 'Autorizații';
-  if (!isLucrari) { loadAuth(); }
+function updateKeyStatus() {
+  var btn = document.getElementById('key-status-btn');
+  if (btn) btn.textContent = getClaudeKey() ? 'Setata' : 'Nesetata';
 }
-
-// ── LOAD AUTH ──────────────────────────────────
+function checkKeyThenScan() {
+  if (!getClaudeKey()) { if (confirm('Nu ai setat Claude API Key. Vrei sa il setezi acum?')) promptClaudeKey(); return; }
+  document.getElementById('scan-input').click();
+}
+function switchTab(tab) {
+  var isL = tab === 'lucrari';
+  document.getElementById('section-lucrari').style.display = isL ? 'block' : 'none';
+  document.getElementById('section-autorizatii').style.display = isL ? 'none' : 'block';
+  document.getElementById('auth-fab').style.display = isL ? 'none' : 'flex';
+  document.getElementById('tab-lucrari').className = 'main-tab' + (isL ? ' active' : '');
+  document.getElementById('tab-autorizatii').className = 'main-tab' + (!isL ? ' active' : '');
+  if (!isL) { loadAuth(); updateKeyStatus(); }
+}
 async function loadAuth() {
-  const cached = JSON.parse(localStorage.getItem('auth_cache') || '[]');
+  var cached = JSON.parse(localStorage.getItem('auth_cache') || '[]');
   if (cached.length) { authRecords = cached; renderAuth(); showAuthNotifs(); }
   if (!navigator.onLine) return;
-  const { data, error } = await sb.from('autorizatii').select('*');
-  if (!error && data) {
-    authRecords = data;
-    localStorage.setItem('auth_cache', JSON.stringify(data));
+  var res = await sb.from('autorizatii').select('*');
+  if (!res.error && res.data) {
+    authRecords = res.data;
+    localStorage.setItem('auth_cache', JSON.stringify(res.data));
     renderAuth(); showAuthNotifs();
   }
 }
-
-// ── RENDER AUTH LIST ───────────────────────────
 function renderAuth() {
-  const list = document.getElementById('auth-list');
-  const q = (document.getElementById('auth-search').value || '').toLowerCase();
-  const f = document.getElementById('auth-filter').value;
-
-  let res = [...authRecords];
-  if (q) res = res.filter(r => r.beneficiar.toLowerCase().includes(q));
-  if (f === 'expired') res = res.filter(r => daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0);
-  else if (f === '15') res = res.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
-  else if (f === '30') res = res.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 30; });
-  else if (f === '60') res = res.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 60; });
-  else if (f === 'ok') res = res.filter(r => daysUntilExpiry(r.luna_expirare, r.an_expirare) > 60);
-
-  res.sort((a, b) => {
-    const da = daysUntilExpiry(a.luna_expirare, a.an_expirare);
-    const db = daysUntilExpiry(b.luna_expirare, b.an_expirare);
-    return da - db;
-  });
-
-  const n = res.length;
-  document.getElementById('auth-count').textContent = n + ' ' + (n === 1 ? 'autorizație' : 'autorizații');
-
-  if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">🏛️</div><div style="margin-top:8px;font-size:14px">Nicio autorizație</div></div>'; return; }
-
-  list.innerHTML = res.map(function(r) {
+  var list = document.getElementById('auth-list');
+  var q = (document.getElementById('auth-search').value || '').toLowerCase();
+  var f = document.getElementById('auth-filter').value;
+  var res = authRecords.slice();
+  if (q) res = res.filter(function(r) { return r.beneficiar.toLowerCase().includes(q); });
+  if (f === 'expired') res = res.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
+  else if (f === '15') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
+  else if (f === '30') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 30; });
+  else if (f === '60') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 60; });
+  else if (f === 'ok') res = res.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) > 60; });
+  res.sort(function(a,b) { return daysUntilExpiry(a.luna_expirare, a.an_expirare) - daysUntilExpiry(b.luna_expirare, b.an_expirare); });
+  var n = res.length;
+  document.getElementById('auth-count').textContent = n + ' ' + (n === 1 ? 'autorizatie' : 'autorizatii');
+  if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">🏛️</div><div style="margin-top:8px;font-size:14px">Nicio autorizatie</div></div>'; return; }
+  list.innerHTML = '';
+  res.forEach(function(r) {
     var days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
     var expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
-    var html = '<div class="auth-card" data-id="' + r.id + '" style="border-left-color:' + borderColorAuth(days) + '" onclick="authCardClick(this)">';
-    html += '<div class="card-top"><div class="auth-name">' + r.beneficiar + '</div>';
-    html += '<span class="inst-badge" style="background:' + instColor(r.institutie) + '">' + instShort(r.institutie) + '</span></div>';
-    html += '<div class="auth-meta">';
-    if (r.nr_autorizatie) html += '<span>📋 ' + r.nr_autorizatie + '</span>';
-    html += '<span>📅 Expiră: ' + expStr + '</span>';
-    html += '</div>';
-    html += '<div class="auth-bottom">' + daysBadge(days);
-    if (r.observatii) html += '<span class="card-obs">' + r.observatii + '</span>';
-    html += '</div></div>';
-    return html;
-  }).join('');
+    var card = document.createElement('div');
+    card.className = 'auth-card';
+    card.style.borderLeftColor = borderColorAuth(days);
+    card.dataset.id = r.id;
+    card.innerHTML =
+      '<div class="card-top"><div class="auth-name">' + r.beneficiar + '</div>' +
+      '<span class="inst-badge" style="background:' + instColor(r.institutie) + '">' + instShort(r.institutie) + '</span></div>' +
+      '<div class="auth-meta">' +
+      (r.nr_autorizatie ? '<span>📋 ' + r.nr_autorizatie + '</span>' : '') +
+      '<span>📅 Expira: ' + expStr + '</span>' +
+      '</div>' +
+      '<div class="auth-bottom">' + daysBadge(days) +
+      (r.observatii ? '<span class="card-obs">' + r.observatii + '</span>' : '') +
+      '</div>';
+    card.addEventListener('click', function() { openAuthDetail(this.dataset.id); });
+    list.appendChild(card);
+  });
 }
-
-// ── NOTIFICATIONS ──────────────────────────────
-function setAuthFilter(val) {
-  document.getElementById('auth-filter').value = val;
-  renderAuth();
-}
-
+function setAuthFilter(val) { document.getElementById('auth-filter').value = val; renderAuth(); }
 function showAuthNotifs() {
   var container = document.getElementById('auth-notifs');
   var expired = authRecords.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
   var d15 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
   var d30 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 15 && d <= 30; });
   var d60 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 30 && d <= 60; });
-
-  var html = '';
-  if (expired.length) html += '<div class="notif-banner notif-red" data-filter="expired" onclick="setAuthFilter(this.dataset.filter)">⚠️ ' + expired.length + ' autorizație expirată!</div>';
-  if (d15.length) html += '<div class="notif-banner notif-orange" data-filter="15" onclick="setAuthFilter(this.dataset.filter)">⏰ ' + d15.length + ' expiră în mai puțin de 15 zile</div>';
-  if (d30.length) html += '<div class="notif-banner notif-orange" data-filter="30" onclick="setAuthFilter(this.dataset.filter)">🔔 ' + d30.length + ' expiră în mai puțin de 30 zile</div>';
-  if (d60.length) html += '<div class="notif-banner notif-yellow" data-filter="60" onclick="setAuthFilter(this.dataset.filter)">📢 ' + d60.length + ' expiră în mai puțin de 60 zile</div>';
-  container.innerHTML = html;
+  container.innerHTML = '';
+  function addBanner(cls, text, fv) {
+    var div = document.createElement('div');
+    div.className = 'notif-banner ' + cls;
+    div.textContent = text;
+    div.addEventListener('click', function() { setAuthFilter(fv); });
+    container.appendChild(div);
+  }
+  if (expired.length) addBanner('notif-red',    '⚠️ ' + expired.length + ' autorizatie expirata!', 'expired');
+  if (d15.length)     addBanner('notif-orange',  '⏰ ' + d15.length + ' expira in mai putin de 15 zile', '15');
+  if (d30.length)     addBanner('notif-orange',  '🔔 ' + d30.length + ' expira in mai putin de 30 zile', '30');
+  if (d60.length)     addBanner('notif-yellow',  '📢 ' + d60.length + ' expira in mai putin de 60 zile', '60');
 }
-
-// ── AUTH DETAIL ────────────────────────────────
-function authCardClick(el) { openAuthDetail(el.dataset.id); }
-
 function openAuthDetail(id) {
   var r = authRecords.find(function(x) { return x.id === id; });
   if (!r) return;
@@ -1057,282 +1032,172 @@ function openAuthDetail(id) {
   var expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
   var el = document.getElementById('auth-detail-content');
   el.innerHTML = '';
-
   var header = document.createElement('div'); header.className = 'detail-header';
-  header.innerHTML = '<div><span class="inst-badge" style="background:' + instColor(r.institutie) + ';display:inline-block">' + r.institutie + '</span><div class="detail-name">' + r.beneficiar + '</div></div>' + daysBadge(days);
+  var left = document.createElement('div');
+  left.innerHTML = '<span class="inst-badge" style="background:' + instColor(r.institutie) + ';display:inline-block">' + r.institutie + '</span><div class="detail-name">' + r.beneficiar + '</div>';
+  header.appendChild(left);
+  var badge = document.createElement('div'); badge.innerHTML = daysBadge(days);
+  header.appendChild(badge);
   el.appendChild(header);
-
-  [['📋 Nr. autorizație', r.nr_autorizatie || '—'],
-   ['📅 Expiră', expStr + ' (ultima zi a lunii)'],
-   ['💬 Observații', r.observatii || '—']
-  ].forEach(function(pair) {
+  [['📋 Nr. autorizatie', r.nr_autorizatie || '—'], ['📅 Expira', expStr + ' (ultima zi a lunii)'], ['💬 Observatii', r.observatii || '—']].forEach(function(pair) {
     var row = document.createElement('div'); row.className = 'detail-row';
     row.innerHTML = '<div class="detail-label">' + pair[0] + '</div><div class="detail-val">' + pair[1] + '</div>';
     el.appendChild(row);
   });
-
   var actions = document.createElement('div'); actions.className = 'detail-actions';
-  var editBtn = document.createElement('button'); editBtn.className = 'btn-edit'; editBtn.textContent = '✏️ Editează';
-  editBtn.onclick = function() { openAuthForm(r.id); };
+  var editBtn = document.createElement('button'); editBtn.className = 'btn-edit'; editBtn.textContent = '✏️ Editeaza';
+  editBtn.addEventListener('click', function() { openAuthForm(r.id); });
   var delBtn = document.createElement('button'); delBtn.className = 'btn-delete'; delBtn.textContent = '🗑️';
-  delBtn.onclick = function() { deleteAuth(r.id); };
+  delBtn.addEventListener('click', function() { deleteAuth(r.id); });
   actions.appendChild(editBtn); actions.appendChild(delBtn);
   el.appendChild(actions);
-
   document.getElementById('auth-detail-modal').style.display = 'flex';
 }
-
-function closeAuthDetail(e) {
-  if (!e || e.target === document.getElementById('auth-detail-modal'))
-    document.getElementById('auth-detail-modal').style.display = 'none';
-}
-
-async function deleteAuth(id) {
-  if (!confirm('Ești sigur că vrei să ștergi această autorizație?')) return;
-  authRecords = authRecords.filter(r => r.id !== id);
-  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  renderAuth(); showAuthNotifs();
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  if (navigator.onLine) await sb.from('autorizatii').delete().eq('id', id);
-}
-
-// ── AUTH FORM ──────────────────────────────────
-function openAuthForm(id = null) {
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  authEditId = id;
-  const r = id ? authRecords.find(x => x.id === id) : null;
-  authInst = r ? r.institutie : 'Apele Romane';
-  authLuna = r ? r.luna_expirare : (new Date().getMonth() + 1);
-  authAn   = r ? r.an_expirare  : new Date().getFullYear();
-
-  document.getElementById('auth-form-title').textContent = id ? 'Editează autorizația' : 'Autorizație nouă';
-  document.getElementById('af-beneficiar').value = r ? r.beneficiar : '';
-  document.getElementById('af-nr').value = r ? (r.nr_autorizatie || '') : '';
-  document.getElementById('af-observatii').value = r ? (r.observatii || '') : '';
-  document.getElementById('auth-save-btn').textContent = id ? 'Salvează' : 'Adaugă';
-  document.getElementById('scan-result').style.display = 'none';
-
-  renderAuthInstRow(); renderAuthLunaRow(); renderAuthAnRow();
-  // Show key status
-  const keyStatus = document.getElementById('key-status');
-  if (keyStatus) keyStatus.textContent = getClaudeKey() ? '✅ Setată' : '⚠️ Nesetată';
-  document.getElementById('auth-form-modal').style.display = 'flex';
-}
-
-function closeAuthForm() { document.getElementById('auth-form-modal').style.display = 'none'; authEditId = null; }
-
 function renderAuthInstRow() {
-  var el = document.getElementById('auth-inst-row');
-  el.innerHTML = '';
+  var el = document.getElementById('auth-inst-row'); el.innerHTML = '';
   ['Apele Romane', 'A.P.M.'].forEach(function(inst) {
     var btn = document.createElement('button');
-    var sel = inst === authInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '';
-    btn.className = 'toggle-btn ' + sel;
-    btn.style.flex = '1';
-    btn.textContent = inst;
-    btn.onclick = function() { authInst = inst; renderAuthInstRow(); };
+    btn.className = 'toggle-btn ' + (inst === authInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '');
+    btn.style.flex = '1'; btn.textContent = inst;
+    btn.addEventListener('click', function() { authInst = inst; renderAuthInstRow(); });
     el.appendChild(btn);
   });
 }
-
 function renderAuthLunaRow() {
-  var el = document.getElementById('auth-luna-row');
-  el.innerHTML = '';
+  var el = document.getElementById('auth-luna-row'); el.innerHTML = '';
   LUNI.forEach(function(l, i) {
     var idx = i + 1;
     var btn = document.createElement('button');
     btn.className = 'toggle-btn' + (idx === authLuna ? ' sel-blue' : '');
     btn.textContent = l;
-    btn.onclick = function() { authLuna = idx; renderAuthLunaRow(); };
+    btn.addEventListener('click', function() { authLuna = idx; renderAuthLunaRow(); });
     el.appendChild(btn);
   });
 }
-
 function renderAuthAnRow() {
-  var el = document.getElementById('auth-an-row');
-  el.innerHTML = '';
+  var el = document.getElementById('auth-an-row'); el.innerHTML = '';
   var yr = new Date().getFullYear();
   [yr - 1, yr, yr + 1, yr + 2].forEach(function(y) {
     var btn = document.createElement('button');
     btn.className = 'toggle-btn' + (y === authAn ? ' sel-blue' : '');
-    btn.style.flex = '1';
-    btn.textContent = y;
-    btn.onclick = function() { authAn = y; renderAuthAnRow(); };
+    btn.style.flex = '1'; btn.textContent = y;
+    btn.addEventListener('click', function() { authAn = y; renderAuthAnRow(); });
     el.appendChild(btn);
   });
 }
-
+function openAuthForm(id) {
+  id = id || null;
+  document.getElementById('auth-detail-modal').style.display = 'none';
+  authEditId = id;
+  var r = id ? authRecords.find(function(x) { return x.id === id; }) : null;
+  authInst  = r ? r.institutie    : 'Apele Romane';
+  authLuna  = r ? r.luna_expirare : (new Date().getMonth() + 1);
+  authAn    = r ? r.an_expirare   : new Date().getFullYear();
+  document.getElementById('auth-form-title').textContent = id ? 'Editeaza autorizatia' : 'Autorizatie noua';
+  document.getElementById('af-beneficiar').value = r ? r.beneficiar : '';
+  document.getElementById('af-nr').value = r ? (r.nr_autorizatie || '') : '';
+  document.getElementById('af-observatii').value = r ? (r.observatii || '') : '';
+  document.getElementById('auth-save-btn').textContent = id ? 'Salveaza' : 'Adauga';
+  document.getElementById('scan-result').style.display = 'none';
+  updateKeyStatus();
+  renderAuthInstRow(); renderAuthLunaRow(); renderAuthAnRow();
+  document.getElementById('auth-form-modal').style.display = 'flex';
+}
+function closeAuthForm() { document.getElementById('auth-form-modal').style.display = 'none'; authEditId = null; }
+async function deleteAuth(id) {
+  if (!confirm('Esti sigur ca vrei sa stergi aceasta autorizatie?')) return;
+  authRecords = authRecords.filter(function(r) { return r.id !== id; });
+  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
+  renderAuth(); showAuthNotifs();
+  document.getElementById('auth-detail-modal').style.display = 'none';
+  if (navigator.onLine) await sb.from('autorizatii').delete().eq('id', id);
+}
 async function saveAuth() {
-  const beneficiar = document.getElementById('af-beneficiar').value.trim();
+  var beneficiar = document.getElementById('af-beneficiar').value.trim();
   if (!beneficiar) return alert('Beneficiarul este obligatoriu.');
-  if (!authLuna) return alert('Luna expirării este obligatorie.');
-
-  const payload = {
-    institutie: authInst,
-    beneficiar,
-    nr_autorizatie: document.getElementById('af-nr').value.trim(),
-    luna_expirare: authLuna,
-    an_expirare: authAn,
-    observatii: document.getElementById('af-observatii').value.trim()
-  };
-
-  const btn = document.getElementById('auth-save-btn');
-  btn.disabled = true; btn.textContent = 'Se salvează…';
-
+  if (!authLuna)   return alert('Luna expirarii este obligatorie.');
+  var payload = { institutie: authInst, beneficiar: beneficiar, nr_autorizatie: document.getElementById('af-nr').value.trim(), luna_expirare: authLuna, an_expirare: authAn, observatii: document.getElementById('af-observatii').value.trim() };
+  var btn = document.getElementById('auth-save-btn');
+  btn.disabled = true; btn.textContent = 'Se salveaza...';
   if (authEditId) {
-    authRecords = authRecords.map(r => r.id === authEditId ? { ...r, ...payload } : r);
+    authRecords = authRecords.map(function(r) { return r.id === authEditId ? Object.assign({}, r, payload) : r; });
     if (navigator.onLine) await sb.from('autorizatii').update(payload).eq('id', authEditId);
   } else {
-    const tempId = 'tmp_' + Date.now();
-    authRecords.push({ ...payload, id: tempId });
+    var tempId = 'tmp_' + Date.now();
+    authRecords.push(Object.assign({}, payload, { id: tempId }));
     if (navigator.onLine) {
-      const { data: ins } = await sb.from('autorizatii').insert([payload]).select();
-      if (ins) authRecords = authRecords.map(r => r.id === tempId ? ins[0] : r);
+      var ins = await sb.from('autorizatii').insert([payload]).select();
+      if (!ins.error && ins.data) authRecords = authRecords.map(function(r) { return r.id === tempId ? ins.data[0] : r; });
     }
   }
-
   localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  btn.disabled = false; btn.textContent = authEditId ? 'Salvează' : 'Adaugă';
+  btn.disabled = false; btn.textContent = authEditId ? 'Salveaza' : 'Adauga';
   closeAuthForm(); renderAuth(); showAuthNotifs();
 }
-
-// ── SCAN DOCUMENT (Claude API) ─────────────────
-function checkKeyThenScan() {
-  if (!getClaudeKey()) {
-    if (confirm('Nu ai setat Claude API Key. Vrei să îl setezi acum?')) {
-      promptClaudeKey();
-    }
-    return;
-  }
-  document.getElementById('scan-input').click();
-}
-
 async function scanDocument(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const resultDiv = document.getElementById('scan-result');
-  resultDiv.style.display = 'block';
-  resultDiv.textContent = '⏳ Se analizează documentul cu AI…';
-
+  var file = input.files[0]; if (!file) return;
+  var resultDiv = document.getElementById('scan-result');
+  resultDiv.style.display = 'block'; resultDiv.textContent = '⏳ Se analizeaza cu AI...';
   try {
-    const base64 = await new Promise((res, rej) => {
-      const reader = new FileReader();
-      reader.onload = () => res(reader.result.split(',')[1]);
-      reader.onerror = rej;
-      reader.readAsDataURL(file);
-    });
-
-    const isPdf = file.type === 'application/pdf';
-    const mediaType = isPdf ? 'application/pdf' : file.type;
-
-    const body = {
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 500,
-      messages: [{
-        role: 'user',
-        content: [
-          isPdf
-            ? { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } }
-            : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          { type: 'text', text: 'Din acest document extrage: 1) Numele beneficiarului/titularului, 2) Numarul autorizatiei, 3) Data expirarii (luna si anul). Raspunde DOAR cu JSON: {"beneficiar":"...","nr_autorizatie":"...","luna":5,"an":2026}. Daca nu gasesti o valoare pune null.' }
-        ]
-      }]
-    };
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': getClaudeKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify(body)
-    });
-
-    const data = await resp.json();
-    const text = data.content[0].text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(text);
-
-    if (parsed.beneficiar) document.getElementById('af-beneficiar').value = parsed.beneficiar;
+    var base64 = await new Promise(function(res, rej) { var reader = new FileReader(); reader.onload = function() { res(reader.result.split(',')[1]); }; reader.onerror = rej; reader.readAsDataURL(file); });
+    var isPdf = file.type === 'application/pdf';
+    var contentBlock = isPdf ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } } : { type: 'image', source: { type: 'base64', media_type: file.type, data: base64 } };
+    var body = { model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: 'Din acest document extrage: 1) Numele beneficiarului, 2) Numarul autorizatiei, 3) Data expirarii (luna si anul). Raspunde DOAR cu JSON: {"beneficiar":"...","nr_autorizatie":"...","luna":5,"an":2026}. Daca nu gasesti o valoare pune null.' }] }] };
+    var resp = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': getClaudeKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify(body) });
+    var data = await resp.json();
+    var parsed = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim());
+    if (parsed.beneficiar)     document.getElementById('af-beneficiar').value = parsed.beneficiar;
     if (parsed.nr_autorizatie) document.getElementById('af-nr').value = parsed.nr_autorizatie;
-    if (parsed.luna) { authLuna = parseInt(parsed.luna); renderAuthLunaRow(); }
-    if (parsed.an) { authAn = parseInt(parsed.an); renderAuthAnRow(); }
-
-    resultDiv.innerHTML = '✅ Date extrase: <b>' + (parsed.beneficiar || '?') + '</b> | Nr: <b>' + (parsed.nr_autorizatie || '?') + '</b> | Expiră: <b>' + (parsed.luna ? LUNI[parsed.luna-1] : '?') + ' ' + (parsed.an || '?') + '</b>';
-  } catch(e) {
-    resultDiv.textContent = '❌ Eroare la scanare: ' + e.message + '. Completează manual.';
-  }
+    if (parsed.luna)  { authLuna = parseInt(parsed.luna); renderAuthLunaRow(); }
+    if (parsed.an)    { authAn   = parseInt(parsed.an);   renderAuthAnRow(); }
+    resultDiv.innerHTML = '✅ Extras: <b>' + (parsed.beneficiar||'?') + '</b> | Nr: <b>' + (parsed.nr_autorizatie||'?') + '</b> | Expira: <b>' + (parsed.luna ? LUNI[parsed.luna-1] : '?') + ' ' + (parsed.an||'?') + '</b>';
+  } catch(e) { resultDiv.textContent = '❌ Eroare: ' + e.message + '. Completeaza manual.'; }
   input.value = '';
 }
-
-// ── IMPORT EXCEL ───────────────────────────────
 async function importExcel(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  // Load SheetJS from CDN
+  var file = input.files[0]; if (!file) return;
   if (!window.XLSX) {
-    await new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-      s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
+    await new Promise(function(res, rej) { var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   }
-
-  const reader = new FileReader();
-  reader.onload = async (e) => {
+  var reader = new FileReader();
+  reader.onload = async function(e) {
     try {
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      let imported = [];
-
-      wb.SheetNames.forEach(sheetName => {
-        const an = parseInt(sheetName);
-        if (isNaN(an)) return;
-        const ws = wb.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
-        rows.forEach(row => {
+      var wb = XLSX.read(e.target.result, { type: 'array' });
+      var imported = [];
+      wb.SheetNames.forEach(function(sheetName) {
+        var an = parseInt(sheetName); if (isNaN(an)) return;
+        var rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 });
+        rows.forEach(function(row) {
           if (!row[0]) return;
-          const beneficiar = String(row[0]).trim();
-          if (!beneficiar || beneficiar.length < 2) return;
-          // Luna poate fi in coloana 1 sau 2
-          let luna = null;
-          for (let ci = 1; ci <= 2; ci++) {
-            const val = row[ci];
-            if (!val) continue;
-            const n = parseInt(val);
-            if (n >= 1 && n <= 12) { luna = n; break; }
-            // Try month name
-            const lunaStr = String(val).toLowerCase().trim();
-            const lunaIdx = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'].findIndex(l => lunaStr.startsWith(l));
-            if (lunaIdx >= 0) { luna = lunaIdx + 1; break; }
+          var beneficiar = String(row[0]).trim(); if (!beneficiar || beneficiar.length < 2) return;
+          var luna = null;
+          for (var ci = 1; ci <= 2; ci++) {
+            if (!row[ci]) continue;
+            var n = parseInt(row[ci]); if (n >= 1 && n <= 12) { luna = n; break; }
+            var ls = String(row[ci]).toLowerCase().trim();
+            var li = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'].findIndex(function(l) { return ls.startsWith(l); });
+            if (li >= 0) { luna = li + 1; break; }
           }
           if (!luna) return;
-          imported.push({ beneficiar, luna_expirare: luna, an_expirare: an, institutie: 'Apele Romane', nr_autorizatie: '', observatii: '' });
+          imported.push({ beneficiar: beneficiar, luna_expirare: luna, an_expirare: an, institutie: 'Apele Romane', nr_autorizatie: '', observatii: '' });
         });
       });
-
-      if (!imported.length) { alert('Nu am găsit date valide în Excel.'); return; }
-
-      if (!confirm('Am găsit ' + imported.length + ' autorizații. Le import?')) return;
-
-      const btn = document.getElementById('auth-save-btn');
-      btn.textContent = 'Se importă…'; btn.disabled = true;
-
+      if (!imported.length) { alert('Nu am gasit date valide in Excel.'); return; }
+      if (!confirm('Am gasit ' + imported.length + ' autorizatii. Le import?')) return;
+      var btn = document.getElementById('auth-save-btn'); btn.textContent = 'Se importa...'; btn.disabled = true;
       if (navigator.onLine) {
-        const { data: ins } = await sb.from('autorizatii').insert(imported).select();
-        if (ins) authRecords = [...authRecords, ...ins];
+        var ins = await sb.from('autorizatii').insert(imported).select();
+        if (!ins.error && ins.data) authRecords = authRecords.concat(ins.data);
       } else {
-        imported.forEach(r => authRecords.push({ ...r, id: 'tmp_' + Date.now() + Math.random() }));
+        imported.forEach(function(r) { authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() })); });
       }
-
       localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-      btn.textContent = 'Adaugă'; btn.disabled = false;
+      btn.textContent = 'Adauga'; btn.disabled = false;
       closeAuthForm(); renderAuth(); showAuthNotifs();
-      alert('✅ ' + imported.length + ' autorizații importate cu succes!');
-    } catch(err) {
-      alert('Eroare la citirea Excel: ' + err.message);
-    }
+      alert('✅ ' + imported.length + ' autorizatii importate!');
+    } catch(err) { alert('Eroare Excel: ' + err.message); }
   };
-  reader.readAsArrayBuffer(file);
-  input.value = '';
+  reader.readAsArrayBuffer(file); input.value = '';
 }
 
 // Init
@@ -1340,6 +1205,11 @@ async function importExcel(input) {
   const { data: { session } } = await sb.auth.getSession();
   if (session) showApp();
 })();
+
+document.addEventListener('DOMContentLoaded', function() {
+  var adm = document.getElementById('auth-detail-modal');
+  if (adm) adm.addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
+});
 
 // Înregistrare Service Worker (necesar pentru instalare PWA)
 if ('serviceWorker' in navigator) {
@@ -1350,9 +1220,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
 <!-- AUTORIZATII DETAIL MODAL -->
-<div class="modal-bg" id="auth-detail-modal" style="display:none" onclick="closeAuthDetail(event)">
-  <div class="modal" onclick="event.stopPropagation()">
+<div class="modal-bg" id="auth-detail-modal" style="display:none">
+  <div class="modal" id="auth-detail-inner">
     <div class="modal-handle"></div>
     <div id="auth-detail-content"></div>
   </div>
@@ -1364,13 +1235,11 @@ if ('serviceWorker' in navigator) {
     <div class="modal-handle"></div>
     <div class="modal-title" id="auth-form-title">Autorizație nouă</div>
 
-    <!-- Scan -->
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <div style="font-size:11px;color:var(--muted);padding-top:2px">Claude API Key:</div>
-      <button onclick="promptClaudeKey()" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;color:var(--blue);font-size:11px;font-weight:700;font-family:Barlow,sans-serif;cursor:pointer">
-        <span id="key-status"></span>
-      </button>
+    <div class="key-bar">
+      <span>Claude API Key:</span>
+      <button class="key-btn" id="key-status-btn" onclick="promptClaudeKey()">⚠️ Nesetată</button>
     </div>
+
     <div class="scan-drop" id="scan-drop" onclick="checkKeyThenScan()">
       📷 Scanează / încarcă document (PDF sau imagine)<br>
       <span style="font-size:11px;opacity:0.6">Claude va citi automat datele</span>
@@ -1378,11 +1247,8 @@ if ('serviceWorker' in navigator) {
     <input type="file" id="scan-input" accept="image/*,application/pdf" style="display:none" onchange="scanDocument(this)" />
     <div id="scan-result" style="display:none" class="scan-result"></div>
 
-    <!-- Import Excel -->
-    <div style="margin-bottom:14px">
-      <button class="import-btn" onclick="document.getElementById('excel-input').click()">📊 Import din Excel (.xlsx)</button>
-      <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)" />
-    </div>
+    <button class="import-btn" onclick="document.getElementById('excel-input').click()">📊 Import din Excel (.xlsx)</button>
+    <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)" />
 
     <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
 
