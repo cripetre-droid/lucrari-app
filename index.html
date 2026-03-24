@@ -781,6 +781,12 @@ function selectStadiu(s) { formStadiu=s; renderStadiuRow(); }
 
 function closeForm() { document.getElementById('form-modal').style.display='none'; editId=null; }
 
+function openDatePicker() {
+  var p = document.getElementById('f-data-picker');
+  p.value = '';
+  try { if (p.showPicker) p.showPicker(); else p.click(); } catch(e) { p.click(); }
+}
+
 function onDataInput(el) {
   let v = el.value.replace(/[^\d/]/g,'');
   const prev = el._prev||'';
