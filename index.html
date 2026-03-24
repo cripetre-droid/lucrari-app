@@ -318,9 +318,9 @@
   </div><!-- /section-lucrari -->
 
   <!-- AUTORIZATII SECTION -->
-  <div id="section-autorizatii" style="display:none">
+  <div id="section-autorizatii" style="display:none;padding-top:4px">
     <div id="auth-notifs"></div>
-    <div class="search-row">
+    <div class="search-row" style="padding-top:8px">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input class="search-input" id="auth-search" placeholder="Caută beneficiar…" oninput="renderAuth()" />
@@ -955,6 +955,9 @@ function switchTab(tab) {
   document.getElementById('auth-fab').style.display = isL ? 'none' : 'flex';
   document.getElementById('tab-lucrari').className = 'main-tab' + (isL ? ' active' : '');
   document.getElementById('tab-autorizatii').className = 'main-tab' + (!isL ? ' active' : '');
+  // Ascunde filter-row (Active/Toate/Finalizate) cand suntem pe Autorizatii
+  var filterRow = document.querySelector('.filter-row');
+  if (filterRow) filterRow.style.display = isL ? 'flex' : 'none';
   if (!isL) { loadAuth(); updateKeyStatus(); }
 }
 async function loadAuth() {
