@@ -1009,56 +1009,76 @@ function renderAuth() {
 
   if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">🏛️</div><div style="margin-top:8px;font-size:14px">Nicio autorizație</div></div>'; return; }
 
-  list.innerHTML = res.map(r => {
-    const days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
-    const expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
-    return '<div class="auth-card" style="border-left-color:' + borderColorAuth(days) + '" onclick="openAuthDetail('' + r.id + '')">' +
-      '<div class="card-top"><div class="auth-name">' + r.beneficiar + '</div>' +
-      '<span class="inst-badge" style="background:' + instColor(r.institutie) + '">' + instShort(r.institutie) + '</span></div>' +
-      '<div class="auth-meta">' +
-      (r.nr_autorizatie ? '<span>📋 ' + r.nr_autorizatie + '</span>' : '') +
-      '<span>📅 Expiră: ' + expStr + '</span>' +
-      '</div>' +
-      '<div class="auth-bottom">' + daysBadge(days) +
-      (r.observatii ? '<span class="card-obs">' + r.observatii + '</span>' : '') +
-      '</div></div>';
+  list.innerHTML = res.map(function(r) {
+    var days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
+    var expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
+    var html = '<div class="auth-card" data-id="' + r.id + '" style="border-left-color:' + borderColorAuth(days) + '" onclick="authCardClick(this)">';
+    html += '<div class="card-top"><div class="auth-name">' + r.beneficiar + '</div>';
+    html += '<span class="inst-badge" style="background:' + instColor(r.institutie) + '">' + instShort(r.institutie) + '</span></div>';
+    html += '<div class="auth-meta">';
+    if (r.nr_autorizatie) html += '<span>📋 ' + r.nr_autorizatie + '</span>';
+    html += '<span>📅 Expiră: ' + expStr + '</span>';
+    html += '</div>';
+    html += '<div class="auth-bottom">' + daysBadge(days);
+    if (r.observatii) html += '<span class="card-obs">' + r.observatii + '</span>';
+    html += '</div></div>';
+    return html;
   }).join('');
 }
 
 // ── NOTIFICATIONS ──────────────────────────────
-function showAuthNotifs() {
-  const container = document.getElementById('auth-notifs');
-  const expired = authRecords.filter(r => daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0);
-  const d15 = authRecords.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
-  const d30 = authRecords.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 15 && d <= 30; });
-  const d60 = authRecords.filter(r => { const d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 30 && d <= 60; });
+function setAuthFilter(val) {
+  document.getElementById('auth-filter').value = val;
+  renderAuth();
+}
 
-  let html = '';
-  if (expired.length) html += '<div class="notif-banner notif-red" onclick="document.getElementById('auth-filter').value='expired';renderAuth()">⚠️ ' + expired.length + ' autorizație expirată!</div>';
-  if (d15.length) html += '<div class="notif-banner notif-orange" onclick="document.getElementById('auth-filter').value='15';renderAuth()">⏰ ' + d15.length + ' expiră în mai puțin de 15 zile</div>';
-  if (d30.length) html += '<div class="notif-banner notif-orange" onclick="document.getElementById('auth-filter').value='30';renderAuth()">🔔 ' + d30.length + ' expiră în mai puțin de 30 zile</div>';
-  if (d60.length) html += '<div class="notif-banner notif-yellow" onclick="document.getElementById('auth-filter').value='60';renderAuth()">📢 ' + d60.length + ' expiră în mai puțin de 60 zile</div>';
+function showAuthNotifs() {
+  var container = document.getElementById('auth-notifs');
+  var expired = authRecords.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
+  var d15 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
+  var d30 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 15 && d <= 30; });
+  var d60 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 30 && d <= 60; });
+
+  var html = '';
+  if (expired.length) html += '<div class="notif-banner notif-red" data-filter="expired" onclick="setAuthFilter(this.dataset.filter)">⚠️ ' + expired.length + ' autorizație expirată!</div>';
+  if (d15.length) html += '<div class="notif-banner notif-orange" data-filter="15" onclick="setAuthFilter(this.dataset.filter)">⏰ ' + d15.length + ' expiră în mai puțin de 15 zile</div>';
+  if (d30.length) html += '<div class="notif-banner notif-orange" data-filter="30" onclick="setAuthFilter(this.dataset.filter)">🔔 ' + d30.length + ' expiră în mai puțin de 30 zile</div>';
+  if (d60.length) html += '<div class="notif-banner notif-yellow" data-filter="60" onclick="setAuthFilter(this.dataset.filter)">📢 ' + d60.length + ' expiră în mai puțin de 60 zile</div>';
   container.innerHTML = html;
 }
 
 // ── AUTH DETAIL ────────────────────────────────
+function authCardClick(el) { openAuthDetail(el.dataset.id); }
+
 function openAuthDetail(id) {
-  const r = authRecords.find(x => x.id === id);
+  var r = authRecords.find(function(x) { return x.id === id; });
   if (!r) return;
-  const days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
-  const expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
-  document.getElementById('auth-detail-content').innerHTML =
-    '<div class="detail-header"><div>' +
-    '<span class="inst-badge" style="background:' + instColor(r.institutie) + ';display:inline-block">' + r.institutie + '</span>' +
-    '<div class="detail-name">' + r.beneficiar + '</div></div>' +
-    daysBadge(days) + '</div>' +
-    '<div class="detail-row"><div class="detail-label">📋 Nr. autorizație</div><div class="detail-val">' + (r.nr_autorizatie || '—') + '</div></div>' +
-    '<div class="detail-row"><div class="detail-label">📅 Expiră</div><div class="detail-val">' + expStr + ' (ultima zi a lunii)</div></div>' +
-    '<div class="detail-row"><div class="detail-label">💬 Observații</div><div class="detail-val">' + (r.observatii || '—') + '</div></div>' +
-    '<div class="detail-actions">' +
-    '<button class="btn-edit" onclick="openAuthForm('' + r.id + '')">&#x270f;️ Editează</button>' +
-    '<button class="btn-delete" onclick="deleteAuth('' + r.id + '')">&#x1f5d1;️</button>' +
-    '</div>';
+  var days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
+  var expStr = LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare;
+  var el = document.getElementById('auth-detail-content');
+  el.innerHTML = '';
+
+  var header = document.createElement('div'); header.className = 'detail-header';
+  header.innerHTML = '<div><span class="inst-badge" style="background:' + instColor(r.institutie) + ';display:inline-block">' + r.institutie + '</span><div class="detail-name">' + r.beneficiar + '</div></div>' + daysBadge(days);
+  el.appendChild(header);
+
+  [['📋 Nr. autorizație', r.nr_autorizatie || '—'],
+   ['📅 Expiră', expStr + ' (ultima zi a lunii)'],
+   ['💬 Observații', r.observatii || '—']
+  ].forEach(function(pair) {
+    var row = document.createElement('div'); row.className = 'detail-row';
+    row.innerHTML = '<div class="detail-label">' + pair[0] + '</div><div class="detail-val">' + pair[1] + '</div>';
+    el.appendChild(row);
+  });
+
+  var actions = document.createElement('div'); actions.className = 'detail-actions';
+  var editBtn = document.createElement('button'); editBtn.className = 'btn-edit'; editBtn.textContent = '✏️ Editează';
+  editBtn.onclick = function() { openAuthForm(r.id); };
+  var delBtn = document.createElement('button'); delBtn.className = 'btn-delete'; delBtn.textContent = '🗑️';
+  delBtn.onclick = function() { deleteAuth(r.id); };
+  actions.appendChild(editBtn); actions.appendChild(delBtn);
+  el.appendChild(actions);
+
   document.getElementById('auth-detail-modal').style.display = 'flex';
 }
 
@@ -1102,30 +1122,44 @@ function openAuthForm(id = null) {
 function closeAuthForm() { document.getElementById('auth-form-modal').style.display = 'none'; authEditId = null; }
 
 function renderAuthInstRow() {
-  const el = document.getElementById('auth-inst-row');
-  el.innerHTML = ['Apele Romane', 'A.P.M.'].map(inst => {
-    const sel = inst === authInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '';
-    return '<button class="toggle-btn ' + sel + '" style="flex:1" onclick="authInst='' + inst + '';renderAuthInstRow()">' + inst + '</button>';
-  }).join('');
+  var el = document.getElementById('auth-inst-row');
+  el.innerHTML = '';
+  ['Apele Romane', 'A.P.M.'].forEach(function(inst) {
+    var btn = document.createElement('button');
+    var sel = inst === authInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '';
+    btn.className = 'toggle-btn ' + sel;
+    btn.style.flex = '1';
+    btn.textContent = inst;
+    btn.onclick = function() { authInst = inst; renderAuthInstRow(); };
+    el.appendChild(btn);
+  });
 }
 
 function renderAuthLunaRow() {
-  const el = document.getElementById('auth-luna-row');
-  el.innerHTML = LUNI.map((l, i) => {
-    const idx = i + 1;
-    const sel = idx === authLuna ? 'sel-blue' : '';
-    return '<button class="toggle-btn ' + sel + '" onclick="authLuna=' + idx + ';renderAuthLunaRow()">' + l + '</button>';
-  }).join('');
+  var el = document.getElementById('auth-luna-row');
+  el.innerHTML = '';
+  LUNI.forEach(function(l, i) {
+    var idx = i + 1;
+    var btn = document.createElement('button');
+    btn.className = 'toggle-btn' + (idx === authLuna ? ' sel-blue' : '');
+    btn.textContent = l;
+    btn.onclick = function() { authLuna = idx; renderAuthLunaRow(); };
+    el.appendChild(btn);
+  });
 }
 
 function renderAuthAnRow() {
-  const el = document.getElementById('auth-an-row');
-  const yr = new Date().getFullYear();
-  const years = [yr - 1, yr, yr + 1, yr + 2];
-  el.innerHTML = years.map(y => {
-    const sel = y === authAn ? 'sel-blue' : '';
-    return '<button class="toggle-btn ' + sel + '" style="flex:1" onclick="authAn=' + y + ';renderAuthAnRow()">' + y + '</button>';
-  }).join('');
+  var el = document.getElementById('auth-an-row');
+  el.innerHTML = '';
+  var yr = new Date().getFullYear();
+  [yr - 1, yr, yr + 1, yr + 2].forEach(function(y) {
+    var btn = document.createElement('button');
+    btn.className = 'toggle-btn' + (y === authAn ? ' sel-blue' : '');
+    btn.style.flex = '1';
+    btn.textContent = y;
+    btn.onclick = function() { authAn = y; renderAuthAnRow(); };
+    el.appendChild(btn);
+  });
 }
 
 async function saveAuth() {
