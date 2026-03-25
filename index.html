@@ -266,7 +266,6 @@
     <button class="main-tab" id="tab-autorizatii" onclick="switchTab('autorizatii')">🏛️ Autorizații</button>
   </div>
 
-  <div id="section-lucrari" style="min-height:100vh;padding-bottom:90px">
   <!-- Search -->
   <div class="search-row">
     <div class="search-wrap">
@@ -315,12 +314,12 @@
     <span class="fab-plus">+</span> Înregistrare nouă
   </button>
 </div>
-  </div><!-- /section-lucrari -->
+  
 
   <!-- AUTORIZATII SECTION -->
-  <div id="section-autorizatii" style="display:none;padding-top:4px;padding-bottom:90px;min-height:60vh">
-    <div id="auth-notifs"></div>
-    <div class="search-row" style="padding-top:8px">
+  <div id="section-autorizatii" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:5;background:var(--bg);overflow-y:auto;padding-bottom:90px">
+    <div id="auth-notifs" style="margin-top:0"></div>
+    <div class="search-row">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input class="search-input" id="auth-search" placeholder="Caută beneficiar…" oninput="renderAuth()" />
@@ -341,7 +340,7 @@
     <button class="fab" id="auth-fab" style="display:none" onclick="openAuthForm()">
       <span class="fab-plus">+</span> Autorizație nouă
     </button>
-  </div><!-- /section-autorizatii -->
+  </div>
 
 
 <!-- DETAIL MODAL -->
@@ -950,12 +949,18 @@ function checkKeyThenScan() {
 }
 function switchTab(tab) {
   var isL = tab === 'lucrari';
-  document.getElementById('section-lucrari').style.display = isL ? 'block' : 'none';
-  document.getElementById('section-autorizatii').style.display = isL ? 'none' : 'block';
+  // section-autorizatii is a fixed overlay - show/hide it
+  var secA = document.getElementById('section-autorizatii');
+  secA.style.display = isL ? 'none' : 'block';
+  // When autorizatii is shown, push it below header+tabs
+  if (!isL) {
+    var headerH = document.querySelector('.header').offsetHeight;
+    var tabsH = document.querySelector('.main-tabs').offsetHeight;
+    secA.style.top = (headerH + tabsH) + 'px';
+  }
   document.getElementById('auth-fab').style.display = isL ? 'none' : 'flex';
   document.getElementById('tab-lucrari').className = 'main-tab' + (isL ? ' active' : '');
   document.getElementById('tab-autorizatii').className = 'main-tab' + (!isL ? ' active' : '');
-  // Ascunde filter-row (Active/Toate/Finalizate) cand suntem pe Autorizatii
   var filterRow = document.querySelector('.filter-row');
   if (filterRow) filterRow.style.display = isL ? 'flex' : 'none';
   if (!isL) { loadAuth(); updateKeyStatus(); }
@@ -1159,46 +1164,95 @@ async function scanDocument(input) {
 }
 async function importExcel(input) {
   var file = input.files[0]; if (!file) return;
+
   if (!window.XLSX) {
-    await new Promise(function(res, rej) { var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+    await new Promise(function(res, rej) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
   }
+
   var reader = new FileReader();
   reader.onload = async function(e) {
     try {
       var wb = XLSX.read(e.target.result, { type: 'array' });
       var imported = [];
+
+      // Structura: fiecare sheet = un an
+      // Prima linie = header cu lunile (IANUARIE, FEBRUARIE, etc.)
+      // Beneficiarii sunt scrisi in coloana lunii in care expira
+      var luniMap = {
+        'IANUARIE':1,'FEBRUARIE':2,'MARTIE':3,'APRILIE':4,
+        'MAI':5,'IUNIE':6,'IULIE':7,'IULIE ':7,'AUGUST':8,
+        'SEPTEMBRIE':9,'OCTOMBRIE':10,'NOIEMBRIE':11,'DECEMBRIE':12
+      };
+
       wb.SheetNames.forEach(function(sheetName) {
-        var an = parseInt(sheetName); if (isNaN(an)) return;
+        var an = parseInt(sheetName);
+        if (isNaN(an)) return;
+
         var rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 });
-        rows.forEach(function(row) {
-          if (!row[0]) return;
-          var beneficiar = String(row[0]).trim(); if (!beneficiar || beneficiar.length < 2) return;
-          var luna = null;
-          for (var ci = 1; ci <= 2; ci++) {
-            if (!row[ci]) continue;
-            var n = parseInt(row[ci]); if (n >= 1 && n <= 12) { luna = n; break; }
-            var ls = String(row[ci]).toLowerCase().trim();
-            var li = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'].findIndex(function(l) { return ls.startsWith(l); });
-            if (li >= 0) { luna = li + 1; break; }
-          }
-          if (!luna) return;
-          imported.push({ beneficiar: beneficiar, luna_expirare: luna, an_expirare: an, institutie: 'Apele Romane', nr_autorizatie: '', observatii: '' });
+        if (!rows.length) return;
+
+        // Prima linie = header cu lunile
+        var header = rows[0];
+        var colToLuna = {};
+        header.forEach(function(cell, ci) {
+          if (!cell) return;
+          var key = String(cell).trim().toUpperCase();
+          if (luniMap[key]) colToLuna[ci] = luniMap[key];
         });
+
+        // Restul randurilor - fiecare celula este un beneficiar
+        for (var ri = 1; ri < rows.length; ri++) {
+          var row = rows[ri];
+          for (var ci = 0; ci < row.length; ci++) {
+            if (!row[ci] || colToLuna[ci] === undefined) continue;
+            var beneficiar = String(row[ci]).trim();
+            if (!beneficiar) continue;
+            imported.push({
+              beneficiar: beneficiar,
+              luna_expirare: colToLuna[ci],
+              an_expirare: an,
+              institutie: 'Apele Romane',
+              nr_autorizatie: '',
+              observatii: ''
+            });
+          }
+        }
       });
+
       if (!imported.length) { alert('Nu am gasit date valide in Excel.'); return; }
       if (!confirm('Am gasit ' + imported.length + ' autorizatii. Le import?')) return;
-      var btn = document.getElementById('auth-save-btn'); btn.textContent = 'Se importa...'; btn.disabled = true;
-      if (navigator.onLine) {
-        var ins = await sb.from('autorizatii').insert(imported).select();
-        if (!ins.error && ins.data) authRecords = authRecords.concat(ins.data);
-      } else {
-        imported.forEach(function(r) { authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() })); });
+
+      var btn = document.getElementById('auth-save-btn');
+      btn.textContent = 'Se importa...'; btn.disabled = true;
+
+      // Import in batches of 50 to avoid timeout
+      var batchSize = 50;
+      var allInserted = [];
+      for (var i = 0; i < imported.length; i += batchSize) {
+        var batch = imported.slice(i, i + batchSize);
+        if (navigator.onLine) {
+          var ins = await sb.from('autorizatii').insert(batch).select();
+          if (!ins.error && ins.data) allInserted = allInserted.concat(ins.data);
+        } else {
+          batch.forEach(function(r) {
+            authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() }));
+          });
+        }
       }
+
+      if (allInserted.length) authRecords = authRecords.concat(allInserted);
       localStorage.setItem('auth_cache', JSON.stringify(authRecords));
       btn.textContent = 'Adauga'; btn.disabled = false;
       closeAuthForm(); renderAuth(); showAuthNotifs();
-      alert('✅ ' + imported.length + ' autorizatii importate!');
-    } catch(err) { alert('Eroare Excel: ' + err.message); }
+      alert('✅ ' + imported.length + ' autorizatii importate cu succes!');
+    } catch(err) {
+      alert('Eroare Excel: ' + err.message);
+    }
   };
   reader.readAsArrayBuffer(file); input.value = '';
 }
