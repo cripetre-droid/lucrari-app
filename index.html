@@ -196,6 +196,11 @@
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
   
+    /* ── TABS ── */
+    .main-tabs { display: flex; gap: 6px; padding: 0 20px 14px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%); }
+    .main-tab { flex: 1; padding: 7px 0; border-radius: 8px; border: none; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.18); color: #fff; }
+    .main-tab.active { background: #fff; color: var(--blue-dark); }
+
     /* ── AUTORIZATII ── */
     #section-autorizatii { display: none; }
 </style>
@@ -235,9 +240,9 @@
     </div>
   </div>
   <!-- TABS -->
-  <div class="filter-row" id="main-tabs-row" style="margin-top:0;padding-top:10px">
-    <button class="filter-btn active" id="tab-lucrari" onclick="switchTab('lucrari')">&#x1F4CB; Lucr&#x103;ri</button>
-    <button class="filter-btn" id="tab-autorizatii" onclick="switchTab('autorizatii')">&#x1F3DB; Autoriza&#x21B;ii</button>
+  <div class="main-tabs">
+    <button class="main-tab active" id="tab-lucrari" onclick="switchTab('lucrari')">&#x1F4CB; Lucr&#x103;ri</button>
+    <button class="main-tab" id="tab-autorizatii" onclick="switchTab('autorizatii')">&#x1F3DB;&#xFE0F; Autoriza&#x21B;ii</button>
   </div>
 
   <!-- SECTION LUCRARI -->
@@ -923,8 +928,8 @@ function switchTab(tab) {
   document.getElementById('section-autorizatii').style.display = isL ? 'none' : 'block';
   document.getElementById('auth-fab').style.display = isL ? 'none' : 'flex';
   document.querySelector('.filter-row').style.display = isL ? 'flex' : 'none';
-  document.getElementById('tab-lucrari').className = 'filter-btn' + (isL ? ' active' : '');
-  document.getElementById('tab-autorizatii').className = 'filter-btn' + (!isL ? ' active' : '');
+  document.getElementById('tab-lucrari').className = 'main-tab' + (isL ? ' active' : '');
+  document.getElementById('tab-autorizatii').className = 'main-tab' + (!isL ? ' active' : '');
   if (!isL) loadAuth();
 }
 async function loadAuth() {
@@ -1156,6 +1161,8 @@ async function importExcel(input) {
         var batch = imported.slice(i, i + 50);
         if (navigator.onLine) {
           var ins = await sb.from('autorizatii').insert(batch).select();
+          console.log('batch', i, 'result:', ins.error ? ins.error.message : ins.data.length + ' inserted');
+          if (ins.error) { alert('Eroare Supabase: ' + ins.error.message); btn.textContent = 'Adauga'; btn.disabled = false; return; }
           if (!ins.error && ins.data) allIns = allIns.concat(ins.data);
         } else {
           batch.forEach(function(r) { authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() })); });
