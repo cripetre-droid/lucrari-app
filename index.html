@@ -195,7 +195,15 @@
     /* Spinner */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+  
+    /* ── TABS ── */
+    .main-tabs { display: flex; gap: 6px; padding: 0 20px 14px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%); }
+    .main-tab { flex: 1; padding: 7px 0; border-radius: 8px; border: none; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.18); color: #fff; }
+    .main-tab.active { background: #fff; color: var(--blue-dark); }
+
+    /* ── AUTORIZATII ── */
+    #section-autorizatii { display: none; }
+</style>
 </head>
 <body>
 
@@ -1161,18 +1169,9 @@ async function importExcel(input) {
       if (allIns.length) authRecords = authRecords.concat(allIns);
       localStorage.setItem('auth_cache', JSON.stringify(authRecords));
       btn.textContent = 'Adauga'; btn.disabled = false;
-      closeAuthForm();
-      // Reload fresh from Supabase after import
-      if (navigator.onLine) {
-        var fresh = await sb.from('autorizatii').select('*');
-        if (!fresh.error && fresh.data) {
-          authRecords = fresh.data;
-          localStorage.setItem('auth_cache', JSON.stringify(fresh.data));
-        }
-      }
-      renderAuth(); showAuthNotifs();
-      alert('\u2705 ' + imported.length + ' autorizatii importate! Total in baza: ' + authRecords.length);
-    } catch(err) { alert('Eroare: ' + err.message + '\n' + err.stack); }
+      closeAuthForm(); renderAuth(); showAuthNotifs();
+      alert('\u2705 ' + imported.length + ' autorizatii importate!');
+    } catch(err) { alert('Eroare: ' + err.message); }
   };
   reader.readAsArrayBuffer(file); input.value = '';
 }
