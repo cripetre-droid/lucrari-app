@@ -1,4 +1,4 @@
-const CACHE = 'lucrari-v4';
+const CACHE = 'lucrari-v5';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
@@ -22,6 +22,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('supabase.co')) return;
+  if (e.request.url.includes('googleapis.com')) return;
+  if (e.request.url.includes('jsdelivr.net')) return;
 
   e.respondWith(
     fetch(e.request)
