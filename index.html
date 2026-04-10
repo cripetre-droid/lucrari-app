@@ -1210,6 +1210,16 @@ async function importExcel(input) {
   reader.readAsArrayBuffer(file); input.value = '';
 }
 
+// ── BACK BUTTON INTERCEPT ────────────────────────────────
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function() {
+  var app = document.getElementById('app');
+  if (app && app.style.display !== 'none') {
+    history.pushState(null, null, location.href);
+    document.getElementById('exit-confirm-modal').style.display = 'flex';
+  }
+});
+
 // Init
 (async()=>{
   const { data: { session } } = await sb.auth.getSession();
@@ -1267,6 +1277,21 @@ if ('serviceWorker' in navigator) {
     <div class="form-actions">
       <button class="btn-cancel" onclick="closeAuthForm()">Anuleaz&#x103;</button>
       <button class="btn-save" id="auth-save-btn" onclick="saveAuth()">Adaug&#x103;</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXIT CONFIRM MODAL -->
+<div class="modal-bg" id="exit-confirm-modal" style="display:none">
+  <div class="modal" style="padding:28px 24px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:40px;margin-bottom:12px">👋</div>
+      <div style="font-weight:800;font-size:18px;color:var(--text);margin-bottom:8px">Ieși din aplicație?</div>
+      <div style="font-size:14px;color:var(--muted)">Ești sigur că vrei să închizi aplicația?</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="document.getElementById('exit-confirm-modal').style.display='none';history.pushState(null,null,location.href)">Rămân</button>
+      <button class="btn-save" style="flex:1;padding:13px 0" onclick="history.go(-2)">Ieșire</button>
     </div>
   </div>
 </div>
