@@ -309,12 +309,14 @@
     <div class="meta-row">
       <span class="count-label" id="auth-count">0 autoriza&#x21B;ii</span>
       <select id="auth-filter" onchange="renderAuth()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:5px 8px;font-family:Barlow,sans-serif;font-size:11px;font-weight:700">
+        <option value="active">Active</option>
         <option value="all">Toate</option>
         <option value="expired">Expirate</option>
         <option value="15">&#x2264; 15 zile</option>
         <option value="30">&#x2264; 30 zile</option>
         <option value="60">&#x2264; 60 zile</option>
         <option value="ok">OK</option>
+        <option value="finalizate">Finalizate</option>
       </select>
     </div>
     <div class="list" id="auth-list" style="padding-bottom:90px"></div>
@@ -933,6 +935,9 @@ function switchTab(tab) {
   if (!isL) loadAuth();
 }
 async function loadAuth() {
+  if (document.getElementById('auth-filter').value === 'all') {
+    document.getElementById('auth-filter').value = 'active';
+  }
   var cached = JSON.parse(localStorage.getItem('auth_cache') || '[]');
   if (cached.length) { authRecords = cached; renderAuth(); showAuthNotifs(); }
   if (!navigator.onLine) return;
@@ -949,11 +954,15 @@ function renderAuth() {
   var f = document.getElementById('auth-filter').value;
   var res = authRecords.slice();
   if (q) res = res.filter(function(r) { return r.beneficiar.toLowerCase().includes(q); });
-  if (f === 'expired') res = res.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
-  else if (f === '15') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
-  else if (f === '30') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 30; });
-  else if (f === '60') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 60; });
-  else if (f === 'ok') res = res.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) > 60; });
+  if (f === 'active') res = res.filter(function(r) { return !r.finalizata; });
+  else if (f === 'finalizate') res = res.filter(function(r) { return r.finalizata; });
+  else if (f === 'expired') res = res.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
+  else if (f === '15') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 15; });
+  else if (f === '30') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 30; });
+  else if (f === '60') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 60; });
+  else if (f === 'ok') res = res.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) > 60; });
+  // 'all' shows only non-finalizate
+  else if (f === 'all') res = res.filter(function(r) { return !r.finalizata; });
   res.sort(function(a, b) { return daysUntilExpiry(a.luna_expirare, a.an_expirare) - daysUntilExpiry(b.luna_expirare, b.an_expirare); });
   var n = res.length;
   document.getElementById('auth-count').textContent = n + (n === 1 ? ' autorizatie' : ' autorizatii');
@@ -980,10 +989,10 @@ function renderAuth() {
 function setAuthFilter(val) { document.getElementById('auth-filter').value = val; renderAuth(); }
 function showAuthNotifs() {
   var c = document.getElementById('auth-notifs');
-  var exp = authRecords.filter(function(r) { return daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
-  var d15 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d >= 0 && d <= 15; });
-  var d30 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 15 && d <= 30; });
-  var d60 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return d > 30 && d <= 60; });
+  var exp = authRecords.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
+  var d15 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 15; });
+  var d30 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d > 15 && d <= 30; });
+  var d60 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d > 30 && d <= 60; });
   c.innerHTML = '';
   function addB(cls, txt, fv) {
     var d = document.createElement('div');
@@ -1012,9 +1021,18 @@ function openAuthDetail(id) {
   var acts = document.createElement('div'); acts.className = 'detail-actions';
   var eb = document.createElement('button'); eb.className = 'btn-edit'; eb.textContent = '\u270F\uFE0F Editeaza';
   eb.addEventListener('click', function() { openAuthForm(r.id); });
+  if (!r.finalizata) {
+    var fb = document.createElement('button'); fb.className = 'btn-finalize'; fb.textContent = '\u2705 Finalizeaza';
+    fb.addEventListener('click', function() { finalizeAuth(r.id); });
+    acts.appendChild(eb); acts.appendChild(fb);
+  } else {
+    var ub = document.createElement('button'); ub.className = 'btn-edit'; ub.textContent = '\u21A9 Reactiveaza';
+    ub.addEventListener('click', function() { unfinalizeAuth(r.id); });
+    acts.appendChild(eb); acts.appendChild(ub);
+  }
   var db = document.createElement('button'); db.className = 'btn-delete'; db.textContent = '\uD83D\uDDD1\uFE0F';
   db.addEventListener('click', function() { deleteAuth(r.id); });
-  acts.appendChild(eb); acts.appendChild(db); el.appendChild(acts);
+  acts.appendChild(db); el.appendChild(acts);
   document.getElementById('auth-detail-modal').style.display = 'flex';
 }
 document.addEventListener('DOMContentLoaded', function() {
@@ -1073,6 +1091,22 @@ function openAuthForm(id) {
   document.getElementById('auth-form-modal').style.display = 'flex';
 }
 function closeAuthForm() { document.getElementById('auth-form-modal').style.display = 'none'; authEditId = null; }
+async function finalizeAuth(id) {
+  authRecords = authRecords.map(function(r) { return r.id === id ? Object.assign({}, r, { finalizata: true }) : r; });
+  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
+  renderAuth(); showAuthNotifs();
+  document.getElementById('auth-detail-modal').style.display = 'none';
+  if (navigator.onLine) await sb.from('autorizatii').update({ finalizata: true }).eq('id', id);
+}
+
+async function unfinalizeAuth(id) {
+  authRecords = authRecords.map(function(r) { return r.id === id ? Object.assign({}, r, { finalizata: false }) : r; });
+  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
+  renderAuth(); showAuthNotifs();
+  document.getElementById('auth-detail-modal').style.display = 'none';
+  if (navigator.onLine) await sb.from('autorizatii').update({ finalizata: false }).eq('id', id);
+}
+
 async function deleteAuth(id) {
   if (!confirm('Stergi aceasta autorizatie?')) return;
   authRecords = authRecords.filter(function(r) { return r.id !== id; });
@@ -1161,8 +1195,6 @@ async function importExcel(input) {
         var batch = imported.slice(i, i + 50);
         if (navigator.onLine) {
           var ins = await sb.from('autorizatii').insert(batch).select();
-          console.log('batch', i, 'result:', ins.error ? ins.error.message : ins.data.length + ' inserted');
-          if (ins.error) { alert('Eroare Supabase: ' + ins.error.message); btn.textContent = 'Adauga'; btn.disabled = false; return; }
           if (!ins.error && ins.data) allIns = allIns.concat(ins.data);
         } else {
           batch.forEach(function(r) { authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() })); });
