@@ -1211,10 +1211,12 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
+var _historyDepth = 1;
 history.pushState(null, null, location.href);
 function _backHandler() {
   var app = document.getElementById('app');
   if (app && app.style.display !== 'none') {
+    _historyDepth++;
     history.pushState(null, null, location.href);
     document.getElementById('exit-confirm-modal').style.display = 'flex';
   }
@@ -1223,7 +1225,7 @@ window.addEventListener('popstate', _backHandler);
 function exitApp() {
   window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  history.go(-1);
+  history.go(-(_historyDepth + 1));
 }
 
 // Init
