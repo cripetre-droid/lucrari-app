@@ -1225,7 +1225,7 @@ window.addEventListener('popstate', _backHandler);
 function exitApp() {
   window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  history.go(-(_historyDepth + 1));
+  window.close();
 }
 
 // Init
