@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.cripetre_droid.twa",
+    "sha256_cert_fingerprints": [
+      "E1:CA:C2:31:9D:6C:57:02:7B:FD:B5:CE:11:6A:AE:FF:8C:26:B1:CA:85:D2:5C:9C:F4:04:2D:11:19:47:7A:69"
+    ]
+  }
+}]
