@@ -1211,21 +1211,19 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
-var _exitingApp = false;
 history.pushState(null, null, location.href);
-window.addEventListener('popstate', function() {
-  if (_exitingApp) return;
+function _backHandler() {
   var app = document.getElementById('app');
   if (app && app.style.display !== 'none') {
     history.pushState(null, null, location.href);
     document.getElementById('exit-confirm-modal').style.display = 'flex';
   }
-});
+}
+window.addEventListener('popstate', _backHandler);
 function exitApp() {
-  _exitingApp = true;
+  window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  window.close();
-  setTimeout(function() { history.go(-(history.length)); }, 100);
+  history.go(-1);
 }
 
 // Init
