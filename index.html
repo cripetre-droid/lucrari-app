@@ -1211,14 +1211,20 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
+// Două state-uri buffer: nu ajungem niciodată la URL-ul de bază prin Back normal
 history.pushState(null, null, location.href);
-window.addEventListener('popstate', function() {
-  // Nu adaugă state nou — rămânem la baza historiei
+history.pushState(null, null, location.href);
+function _backHandler() {
+  // Refacem un state buffer ca să nu ajungem la baza history la viitorul Back
+  history.pushState(null, null, location.href);
   document.getElementById('exit-confirm-modal').style.display = 'flex';
-});
+}
+window.addEventListener('popstate', _backHandler);
 function exitApp() {
+  window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  window.close();
+  // Merge înapoi ÎNAINTE de prima înregistrare → Chrome Custom Tab se închide
+  history.go(-(history.length + 1));
 }
 
 // Init
