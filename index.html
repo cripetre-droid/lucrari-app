@@ -1216,8 +1216,9 @@ var _exitRequested = false;
 history.pushState(null, null, location.href);
 function _backHandler() {
   if (_exitRequested) {
-    // Suntem în contextul popstate — Chrome permite window.close() aici
+    // Suntem în contextul popstate — singura cale prin care Chrome permite închiderea
     window.close();
+    setTimeout(function(){ window.location.replace('https://cripetre-droid.github.io/'); }, 100);
     return;
   }
   history.pushState(null, null, location.href);
@@ -1302,7 +1303,7 @@ if ('serviceWorker' in navigator) {
     </div>
     <div style="display:flex;gap:10px">
       <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="document.getElementById('exit-confirm-modal').style.display='none'">Rămân</button>
-      <button class="btn-save" style="flex:1;padding:13px 0" onclick="exitApp()">Ieșire v2</button>
+      <button class="btn-save" style="flex:1;padding:13px 0" onclick="exitApp()">Ieșire</button>
     </div>
   </div>
 </div>
