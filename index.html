@@ -1211,17 +1211,24 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
-// Un state buffer inițial
+// ── BACK BUTTON + EXIT ───────────────────────────────────
+var _exitRequested = false;
 history.pushState(null, null, location.href);
 function _backHandler() {
-  history.pushState(null, null, location.href); // Refacem bufferul
+  if (_exitRequested) {
+    // Suntem în contextul popstate — Chrome permite window.close() aici
+    window.close();
+    return;
+  }
+  history.pushState(null, null, location.href);
   document.getElementById('exit-confirm-modal').style.display = 'flex';
 }
 window.addEventListener('popstate', _backHandler);
 function exitApp() {
-  window.removeEventListener('popstate', _backHandler);
+  _exitRequested = true;
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  history.go(-(history.length + 1));
+  // Declanșează popstate → _backHandler va apela window.close() din contextul corect
+  history.back();
 }
 
 // Init
