@@ -1212,29 +1212,13 @@ async function importExcel(input) {
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
 history.pushState(null, null, location.href);
-function _isVisible(id) {
-  var el = document.getElementById(id);
-  return el && el.style.display !== 'none';
-}
-function _backHandler() {
-  var dbg = 'app=' + _isVisible('app') + ' detail=' + _isVisible('detail-modal') + ' form=' + _isVisible('form-modal');
-  alert('BACK FIRED\n' + dbg);
-  // Modals: push state înapoi + închide modalul (Back = "du-mă înapoi la ce era")
-  if (_isVisible('auth-form-modal')) { history.pushState(null,null,location.href); closeAuthForm(); return; }
-  if (_isVisible('form-modal'))      { history.pushState(null,null,location.href); closeForm();     return; }
-  if (_isVisible('auth-detail-modal')) { history.pushState(null,null,location.href); document.getElementById('auth-detail-modal').style.display='none'; return; }
-  if (_isVisible('detail-modal'))    { history.pushState(null,null,location.href); closeDetail();   return; }
-  // Home page: NU push state — arată dialogul și lasă history la bază
-  if (_isVisible('app')) {
-    document.getElementById('exit-confirm-modal').style.display = 'flex';
-  }
-}
-window.addEventListener('popstate', _backHandler);
+window.addEventListener('popstate', function() {
+  // Nu adaugă state nou — rămânem la baza historiei
+  document.getElementById('exit-confirm-modal').style.display = 'flex';
+});
 function exitApp() {
-  window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  // Suntem la primul state — history.back() nu are unde merge → TWA se închide
-  history.back();
+  window.close();
 }
 
 // Init
