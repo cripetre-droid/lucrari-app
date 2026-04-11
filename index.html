@@ -1211,13 +1211,20 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
-var _historyDepth = 1;
 history.pushState(null, null, location.href);
+function _isVisible(id) {
+  var el = document.getElementById(id);
+  return el && el.style.display !== 'none';
+}
 function _backHandler() {
-  var app = document.getElementById('app');
-  if (app && app.style.display !== 'none') {
-    _historyDepth++;
-    history.pushState(null, null, location.href);
+  history.pushState(null, null, location.href);
+  // Închide modalele în ordine: form > detail > auth-form > auth-detail > exit
+  if (_isVisible('auth-form-modal')) { closeAuthForm(); return; }
+  if (_isVisible('form-modal'))      { closeForm();     return; }
+  if (_isVisible('auth-detail-modal')) { document.getElementById('auth-detail-modal').style.display='none'; return; }
+  if (_isVisible('detail-modal'))    { closeDetail();   return; }
+  // Niciun modal deschis — pe home page, arată dialogul de ieșire
+  if (_isVisible('app')) {
     document.getElementById('exit-confirm-modal').style.display = 'flex';
   }
 }
@@ -1225,7 +1232,8 @@ window.addEventListener('popstate', _backHandler);
 function exitApp() {
   window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  window.close();
+  // Navighează la home screen Android (iese din TWA)
+  window.location.href = 'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';
 }
 
 // Init
