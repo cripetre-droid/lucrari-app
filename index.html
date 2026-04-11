@@ -1211,19 +1211,16 @@ async function importExcel(input) {
 }
 
 // ── BACK BUTTON INTERCEPT ────────────────────────────────
-// Două state-uri buffer: nu ajungem niciodată la URL-ul de bază prin Back normal
-history.pushState(null, null, location.href);
+// Un state buffer inițial
 history.pushState(null, null, location.href);
 function _backHandler() {
-  // Refacem un state buffer ca să nu ajungem la baza history la viitorul Back
-  history.pushState(null, null, location.href);
+  history.pushState(null, null, location.href); // Refacem bufferul
   document.getElementById('exit-confirm-modal').style.display = 'flex';
 }
 window.addEventListener('popstate', _backHandler);
 function exitApp() {
   window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  // Merge înapoi ÎNAINTE de prima înregistrare → Chrome Custom Tab se închide
   history.go(-(history.length + 1));
 }
 
@@ -1297,7 +1294,7 @@ if ('serviceWorker' in navigator) {
       <div style="font-size:14px;color:var(--muted)">Ești sigur că vrei să închizi aplicația?</div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="document.getElementById('exit-confirm-modal').style.display='none';history.pushState(null,null,location.href)">Rămân</button>
+      <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="document.getElementById('exit-confirm-modal').style.display='none'">Rămân</button>
       <button class="btn-save" style="flex:1;padding:13px 0" onclick="exitApp()">Ieșire v2</button>
     </div>
   </div>
