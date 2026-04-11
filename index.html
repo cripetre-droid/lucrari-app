@@ -1217,13 +1217,12 @@ function _isVisible(id) {
   return el && el.style.display !== 'none';
 }
 function _backHandler() {
-  history.pushState(null, null, location.href);
-  // Închide modalele în ordine: form > detail > auth-form > auth-detail > exit
-  if (_isVisible('auth-form-modal')) { closeAuthForm(); return; }
-  if (_isVisible('form-modal'))      { closeForm();     return; }
-  if (_isVisible('auth-detail-modal')) { document.getElementById('auth-detail-modal').style.display='none'; return; }
-  if (_isVisible('detail-modal'))    { closeDetail();   return; }
-  // Niciun modal deschis — pe home page, arată dialogul de ieșire
+  // Modals: push state înapoi + închide modalul (Back = "du-mă înapoi la ce era")
+  if (_isVisible('auth-form-modal')) { history.pushState(null,null,location.href); closeAuthForm(); return; }
+  if (_isVisible('form-modal'))      { history.pushState(null,null,location.href); closeForm();     return; }
+  if (_isVisible('auth-detail-modal')) { history.pushState(null,null,location.href); document.getElementById('auth-detail-modal').style.display='none'; return; }
+  if (_isVisible('detail-modal'))    { history.pushState(null,null,location.href); closeDetail();   return; }
+  // Home page: NU push state — arată dialogul și lasă history la bază
   if (_isVisible('app')) {
     document.getElementById('exit-confirm-modal').style.display = 'flex';
   }
@@ -1232,8 +1231,8 @@ window.addEventListener('popstate', _backHandler);
 function exitApp() {
   window.removeEventListener('popstate', _backHandler);
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  // Navighează la home screen Android (iese din TWA)
-  window.location.href = 'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';
+  // Suntem la primul state — history.back() nu are unde merge → TWA se închide
+  history.back();
 }
 
 // Init
