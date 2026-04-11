@@ -1217,6 +1217,8 @@ function _isVisible(id) {
   return el && el.style.display !== 'none';
 }
 function _backHandler() {
+  var dbg = 'app=' + _isVisible('app') + ' detail=' + _isVisible('detail-modal') + ' form=' + _isVisible('form-modal');
+  alert('BACK FIRED\n' + dbg);
   // Modals: push state înapoi + închide modalul (Back = "du-mă înapoi la ce era")
   if (_isVisible('auth-form-modal')) { history.pushState(null,null,location.href); closeAuthForm(); return; }
   if (_isVisible('form-modal'))      { history.pushState(null,null,location.href); closeForm();     return; }
