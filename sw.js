@@ -1,4 +1,4 @@
-const CACHE = 'lucrari-v5';
+const CACHE = 'lucrari-v6';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
