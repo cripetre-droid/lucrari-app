@@ -1063,7 +1063,7 @@ function renderAuthLunaRow() {
 function renderAuthAnRow() {
   var el = document.getElementById('auth-an-row'); el.innerHTML = '';
   var yr = new Date().getFullYear();
-  [yr-1, yr, yr+1, yr+2, yr+3, yr+4].forEach(function(y) {
+  [yr-1, yr, yr+1, yr+2, yr+3, yr+4, yr+5, yr+6, yr+7, yr+8, yr+9].forEach(function(y) {
     var btn = document.createElement('button');
     btn.className = 'toggle-btn' + (y === authAn ? ' sel-blue' : '');
     btn.style.flex = '1'; btn.textContent = y;
