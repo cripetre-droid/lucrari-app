@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <link rel="manifest" href="./manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0369a1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,13 +119,7 @@
     .card-meta { margin-top: 6px; display: flex; gap: 10px; font-size: 12px; color: var(--muted2); flex-wrap: wrap; }
     .card-bottom { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
     .stadiu-badge { border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
-    .inf-btn { display: inline-block; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--muted2); font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 11px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-  .inf-active { border-color: var(--blue); background: rgba(14,165,233,0.15); color: var(--blue); }
-  .card-obs { font-size: 11px; color: #475569; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row-item { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 10px; padding: 10px 12px; cursor: pointer; border-left: 4px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-  .row-item:active { opacity: 0.8; }
-  .row-name { flex: 1; font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row-date { font-size: 11px; color: var(--muted2); flex-shrink: 0; }
+    .card-obs { font-size: 11px; color: #475569; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* FAB */
     .fab {
@@ -195,15 +189,7 @@
     /* Spinner */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-  
-    /* ── TABS ── */
-    .main-tabs { display: flex; gap: 6px; padding: 0 20px 14px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%); }
-    .main-tab { flex: 1; padding: 7px 0; border-radius: 8px; border: none; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.18); color: #fff; }
-    .main-tab.active { background: #fff; color: var(--blue-dark); }
-
-    /* ── AUTORIZATII ── */
-    #section-autorizatii { display: none; }
-</style>
+  </style>
 </head>
 <body>
 
@@ -239,14 +225,6 @@
       <button class="filter-btn" id="fb-finalizate" onclick="setFilter('finalizate')">Finalizate</button>
     </div>
   </div>
-  <!-- TABS -->
-  <div class="main-tabs">
-    <button class="main-tab active" id="tab-lucrari" onclick="switchTab('lucrari')">&#x1F4CB; Lucr&#x103;ri</button>
-    <button class="main-tab" id="tab-autorizatii" onclick="switchTab('autorizatii')">&#x1F3DB;&#xFE0F; Autoriza&#x21B;ii</button>
-  </div>
-
-  <!-- SECTION LUCRARI -->
-  <div id="section-lucrari">
 
   <!-- Search -->
   <div class="search-row">
@@ -256,35 +234,12 @@
     </div>
   </div>
 
-  <!-- Inspector filter -->
-  <div style="padding: 8px 16px 0; display: flex; flex-wrap: wrap; gap: 6px;">
-    <button onclick="setInspFilter('')" id="if-all" class="inf-btn inf-active">Toți</button>
-    <button onclick="setInspFilter('ES')" id="if-ES" class="inf-btn">ES</button>
-    <button onclick="setInspFilter('MM')" id="if-MM" class="inf-btn">MM</button>
-    <button onclick="setInspFilter('ON')" id="if-ON" class="inf-btn">ON</button>
-    <button onclick="setInspFilter('ONN')" id="if-ONN" class="inf-btn">ONN</button>
-    <button onclick="setInspFilter('AB')" id="if-AB" class="inf-btn">AB</button>
-    <button onclick="setInspFilter('ABB')" id="if-ABB" class="inf-btn">ABB</button>
-    <button onclick="setInspFilter('CTUD')" id="if-CTUD" class="inf-btn">CTUD</button>
-    <button onclick="setInspFilter('GP')" id="if-GP" class="inf-btn">GP</button>
-    <button onclick="setInspFilter('RN')" id="if-RN" class="inf-btn">RN</button>
-    <button onclick="setInspFilter('ANCA')" id="if-ANCA" class="inf-btn">ANCA</button>
-    <button onclick="setInspFilter('MC')" id="if-MC" class="inf-btn">MC</button>
-    <button onclick="setInspFilter('Altul')" id="if-Altul" class="inf-btn">Altul</button>
-  </div>
-
   <!-- Meta -->
   <div class="meta-row">
     <span class="count-label" id="count-label">0 înregistrări</span>
     <button class="sort-btn" onclick="toggleSort()">
       <span class="sort-arrow" id="sort-arrow">↓</span>
       <span id="sort-label">Recente primele</span>
-    </button>
-    <button class="sort-btn" onclick="toggleView()" style="margin-left:4px">
-      <span id="view-icon">☰</span>
-    </button>
-    <button class="sort-btn" onclick="exportTxt()" style="margin-left:4px" title="Export TXT">
-      ⬇️ TXT
     </button>
   </div>
 
@@ -295,36 +250,6 @@
   <button class="fab" onclick="openForm()">
     <span class="fab-plus">+</span> Înregistrare nouă
   </button>
-  </div><!-- /section-lucrari -->
-
-  <!-- SECTION AUTORIZATII -->
-  <div id="section-autorizatii">
-    <div id="auth-notifs"></div>
-    <div class="search-row">
-      <div class="search-wrap">
-        <span class="search-icon">&#x1F50D;</span>
-        <input class="search-input" id="auth-search" placeholder="Caut&#x103; beneficiar&#x2026;" oninput="renderAuth()" />
-      </div>
-    </div>
-    <div class="meta-row">
-      <span class="count-label" id="auth-count">0 autoriza&#x21B;ii</span>
-      <select id="auth-filter" onchange="renderAuth()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:5px 8px;font-family:Barlow,sans-serif;font-size:11px;font-weight:700">
-        <option value="active">Active</option>
-        <option value="all">Toate</option>
-        <option value="expired">Expirate</option>
-        <option value="15">&#x2264; 15 zile</option>
-        <option value="30">&#x2264; 30 zile</option>
-        <option value="60">&#x2264; 60 zile</option>
-        <option value="ok">OK</option>
-        <option value="finalizate">Finalizate</option>
-      </select>
-    </div>
-    <div class="list" id="auth-list" style="padding-bottom:90px"></div>
-    <button class="fab" id="auth-fab" style="display:none" onclick="openAuthForm()">
-      <span class="fab-plus">+</span> Autoriza&#x21B;ie nou&#x103;
-    </button>
-  </div><!-- /section-autorizatii -->
-
 </div>
 
 <!-- DETAIL MODAL -->
@@ -396,8 +321,6 @@ const INSTITUTII = ["Apele Romane","A.P.M."];
 let records = [];
 let currentFilter = 'active';
 let sortDir = 'desc';
-let viewMode = 'card'; // 'card' sau 'compact'
-let inspectorFilter = '';
 let editId = null;
 let formInst = 'Apele Romane';
 let formInsp = '';
@@ -548,13 +471,6 @@ function getFiltered() {
   if (currentFilter === 'finalizate') res = res.filter(r => r.stadiu === 'Finalizat');
   const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
   if (q) res = res.filter(r => r.beneficiar.toLowerCase().includes(q));
-  if (inspectorFilter) {
-    if (inspectorFilter === 'Altul') {
-      res = res.filter(r => !['ES','MM','ON','ONN','AB','ABB','CTUD','GP','RN','ANCA','MC'].includes(r.inspector));
-    } else {
-      res = res.filter(r => r.inspector === inspectorFilter);
-    }
-  }
   res.sort((a, b) => sortDir === 'desc'
     ? dateKey(b.data) - dateKey(a.data)
     : dateKey(a.data) - dateKey(b.data));
@@ -569,32 +485,22 @@ function renderList() {
 
   if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">📂</div><div style="margin-top:8px;font-size:14px">Nicio înregistrare</div></div>'; return; }
 
-  if (viewMode === 'compact') {
-    list.innerHTML = data.map(r => `
-      <div class="row-item" style="border-left-color:${stadiuColor(r.stadiu)}" onclick="openDetail('${r.id}')">
-        <span class="inst-badge" style="background:${instColor(r.institutie)};flex-shrink:0">${instShort(r.institutie)}</span>
-        <span class="row-name">${r.beneficiar}</span>
-        <span class="row-date">${r.data||'—'}</span>
-        <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)};flex-shrink:0">${displayStadiu(r)}</span>
-      </div>`).join('');
-  } else {
-    list.innerHTML = data.map(r => `
-      <div class="card" style="border-left-color:${stadiuColor(r.stadiu)}" onclick="openDetail('${r.id}')">
-        <div class="card-top">
-          <div class="card-name">${r.beneficiar}</div>
-          <span class="inst-badge" style="background:${instColor(r.institutie)}">${instShort(r.institutie)}</span>
-        </div>
-        <div class="card-meta">
-          <span>📋 ${r.nr_inregistrare||'—'}</span>
-          <span>📅 ${r.data||'—'}</span>
-          <span>👤 ${displayInsp(r)}</span>
-        </div>
-        <div class="card-bottom">
-          <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)}">${displayStadiu(r)}</span>
-          ${r.observatii?`<span class="card-obs">${r.observatii}</span>`:''}
-        </div>
-      </div>`).join('');
-  }
+  list.innerHTML = data.map(r => `
+    <div class="card" style="border-left-color:${stadiuColor(r.stadiu)}" onclick="openDetail('${r.id}')">
+      <div class="card-top">
+        <div class="card-name">${r.beneficiar}</div>
+        <span class="inst-badge" style="background:${instColor(r.institutie)}">${instShort(r.institutie)}</span>
+      </div>
+      <div class="card-meta">
+        <span>📋 ${r.nr_inregistrare||'—'}</span>
+        <span>📅 ${r.data||'—'}</span>
+        <span>👤 ${displayInsp(r)}</span>
+      </div>
+      <div class="card-bottom">
+        <span class="stadiu-badge" style="background:${stadiuColor(r.stadiu)}22;color:${stadiuColor(r.stadiu)}">${displayStadiu(r)}</span>
+        ${r.observatii?`<span class="card-obs">${r.observatii}</span>`:''}
+      </div>
+    </div>`).join('');
 }
 
 // ── FILTER / SORT ─────────────────────────────
@@ -613,25 +519,7 @@ function toggleSort() {
   renderList();
 }
 
-// -- VIEW MODE ----------------------------------------
-function toggleView() {
-  viewMode = viewMode === 'card' ? 'compact' : 'card';
-  document.getElementById('view-icon').textContent = viewMode === 'card' ? '☰' : '⊞';
-  renderList();
-}
-
-// -- INSPECTOR FILTER --------------------------------
-function setInspFilter(val) {
-  inspectorFilter = val;
-  const ids = ['', 'ES','MM','ON','ONN','AB','ABB','CTUD','GP','RN','ANCA','MC','Altul'];
-  ids.forEach(id => {
-    const el = document.getElementById('if-' + (id || 'all'));
-    if (el) el.className = 'inf-btn' + (id === val ? ' inf-active' : '');
-  });
-  renderList();
-}
-
-// -- DETAIL ────────────────────────────────────
+// ── DETAIL ────────────────────────────────────
 function openDetail(id) {
   const r = records.find(x=>x.id===id);
   if (!r) return;
@@ -698,13 +586,15 @@ function openForm(id=null) {
   const r = id ? records.find(x=>x.id===id) : null;
 
   formInst  = r ? r.institutie  : 'Apele Romane';
-  formInsp  = r ? r.inspector   : '';
+  formInsp  = r ? r.inspector   : 'Altul';
   formStadiu= r ? r.stadiu      : 'În lucru';
 
   document.getElementById('form-title').textContent = id ? 'Editează lucrarea' : 'Înregistrare nouă';
   document.getElementById('f-beneficiar').value = r?.beneficiar||'';
   document.getElementById('f-nr').value = r?.nr_inregistrare||'';
   document.getElementById('f-data').value = r?.data||'';
+  document.getElementById('f-data')._prev = r?.data||'';
+  document.getElementById('f-data-picker').value = r ? dmyToIso(r.data) : '';
   document.getElementById('f-insp-alt').value = r?.inspector_alt||'';
   document.getElementById('f-stadiu-alt').value = r?.stadiu_alt||'';
   document.getElementById('f-observatii').value = r?.observatii||'';
@@ -729,13 +619,11 @@ function prefillNr() {
 }
 
 function renderInstRow() {
-  const el = document.getElementById('inst-row');
-  el.innerHTML = INSTITUTII.map(inst => {
-    const selClass = inst === formInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '';
-    return `<button class="toggle-btn ${selClass}" style="flex:1" onclick="selectInst('${inst}')">${inst}</button>`;
-  }).join('');
+  buildToggleRow('inst-row', INSTITUTII, formInst,
+    i=>i==='Apele Romane'?'sel-ar':'sel-apm',
+    (i)=>`selectInst('${i}')`);
 }
-function selectInst(i) { formInst = i; renderInstRow(); }
+function selectInst(i) { formInst=i; renderInstRow(); }
 
 function renderInspRow() {
   const el = document.getElementById('insp-row');
@@ -836,402 +724,6 @@ async function saveRecord() {
   renderList();
 }
 
-// -- EXPORT ------------------------------------------
-function exportTxt() {
-  const data = getFiltered();
-  if (!data.length) { alert('Nu exista inregistrari de exportat.'); return; }
-
-  const filterLabel = currentFilter === 'active' ? 'Active' : currentFilter === 'finalizate' ? 'Finalizate' : 'Toate';
-  const inspLabel = inspectorFilter ? ' | Inspector: ' + inspectorFilter : '';
-  const now = new Date();
-  const dd = String(now.getDate()).padStart(2,'0');
-  const mm = String(now.getMonth()+1).padStart(2,'0');
-  const yyyy = now.getFullYear();
-  const dateStr = dd + '/' + mm + '/' + yyyy;
-
-  const lines = [];
-  lines.push('================================================');
-  lines.push('         EVIDENTA LUCRARI');
-  lines.push('================================================');
-  lines.push('Exportat: ' + dateStr);
-  lines.push('Filtru: ' + filterLabel + inspLabel);
-  lines.push('Total: ' + data.length + ' inregistrari');
-  lines.push('================================================');
-  lines.push('');
-
-  data.forEach(function(r, i) {
-    lines.push('[' + (i+1) + '] ' + r.beneficiar);
-    lines.push('    Institutie     : ' + r.institutie);
-    lines.push('    Nr. inreg.     : ' + (r.nr_inregistrare || '-'));
-    lines.push('    Data           : ' + (r.data || '-'));
-    lines.push('    Inspector      : ' + displayInsp(r));
-    lines.push('    Stadiu         : ' + displayStadiu(r));
-    if (r.observatii) lines.push('    Observatii     : ' + r.observatii);
-    lines.push('');
-  });
-
-  lines.push('================================================');
-  lines.push('Total: ' + data.length + ' inregistrari exportate');
-  lines.push('================================================');
-
-  const txt = lines.join('\n');
-  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'lucrari_' + dd + '-' + mm + '-' + yyyy + '.txt';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-// -- AUTORIZATII --
-const LUNI = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
-let authRecords = [];
-let authEditId = null;
-let authInst = 'Apele Romane';
-let authLuna = 0;
-let authAn = new Date().getFullYear();
-
-function daysUntilExpiry(luna, an) {
-  var today = new Date(); today.setHours(0,0,0,0);
-  return Math.ceil((new Date(an, luna, 0) - today) / 86400000);
-}
-function daysBadge(days) {
-  if (days < 0)   return '<span class="days-badge days-expired">Expirat ' + Math.abs(days) + ' zile</span>';
-  if (days <= 15) return '<span class="days-badge days-urgent">' + days + ' zile</span>';
-  if (days <= 30) return '<span class="days-badge days-urgent">' + days + ' zile</span>';
-  if (days <= 60) return '<span class="days-badge days-warning">' + days + ' zile</span>';
-  return '<span class="days-badge days-ok">' + days + ' zile</span>';
-}
-function borderAuth(days) {
-  if (days < 0) return '#ef4444';
-  if (days <= 30) return '#f59e0b';
-  if (days <= 60) return '#eab308';
-  return '#22c55e';
-}
-function getClaudeKey() { return localStorage.getItem('claude_api_key') || ''; }
-function promptClaudeKey() {
-  var key = prompt('Introdu Claude API Key (sk-ant-...):', getClaudeKey() || '');
-  if (key && key.trim().startsWith('sk-ant-')) {
-    localStorage.setItem('claude_api_key', key.trim());
-    var btn = document.getElementById('key-status-btn');
-    if (btn) btn.textContent = 'Setata';
-    alert('Cheia a fost salvata!');
-  } else if (key !== null) { alert('Cheie invalida.'); }
-}
-function checkKeyThenScan() {
-  if (!getClaudeKey()) { if (confirm('Nu ai setat API Key. Vrei sa il setezi acum?')) promptClaudeKey(); return; }
-  document.getElementById('scan-input').click();
-}
-function switchTab(tab) {
-  var isL = tab === 'lucrari';
-  document.getElementById('section-lucrari').style.display = isL ? 'block' : 'none';
-  document.getElementById('section-autorizatii').style.display = isL ? 'none' : 'block';
-  document.getElementById('auth-fab').style.display = isL ? 'none' : 'flex';
-  document.querySelector('.filter-row').style.display = isL ? 'flex' : 'none';
-  document.getElementById('tab-lucrari').className = 'main-tab' + (isL ? ' active' : '');
-  document.getElementById('tab-autorizatii').className = 'main-tab' + (!isL ? ' active' : '');
-  if (!isL) loadAuth();
-}
-async function loadAuth() {
-  if (document.getElementById('auth-filter').value === 'all') {
-    document.getElementById('auth-filter').value = 'active';
-  }
-  var cached = JSON.parse(localStorage.getItem('auth_cache') || '[]');
-  if (cached.length) { authRecords = cached; renderAuth(); showAuthNotifs(); }
-  if (!navigator.onLine) return;
-  var res = await sb.from('autorizatii').select('*');
-  if (!res.error && res.data) {
-    authRecords = res.data;
-    localStorage.setItem('auth_cache', JSON.stringify(res.data));
-    renderAuth(); showAuthNotifs();
-  }
-}
-function renderAuth() {
-  var list = document.getElementById('auth-list');
-  var q = (document.getElementById('auth-search').value || '').toLowerCase();
-  var f = document.getElementById('auth-filter').value;
-  var res = authRecords.slice();
-  if (q) res = res.filter(function(r) { return r.beneficiar.toLowerCase().includes(q); });
-  if (f === 'active') res = res.filter(function(r) { return !r.finalizata; });
-  else if (f === 'finalizate') res = res.filter(function(r) { return r.finalizata; });
-  else if (f === 'expired') res = res.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
-  else if (f === '15') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 15; });
-  else if (f === '30') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 30; });
-  else if (f === '60') res = res.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 60; });
-  else if (f === 'ok') res = res.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) > 60; });
-  // 'all' shows only non-finalizate
-  else if (f === 'all') res = res.filter(function(r) { return !r.finalizata; });
-  res.sort(function(a, b) { return daysUntilExpiry(a.luna_expirare, a.an_expirare) - daysUntilExpiry(b.luna_expirare, b.an_expirare); });
-  var n = res.length;
-  document.getElementById('auth-count').textContent = n + (n === 1 ? ' autorizatie' : ' autorizatii');
-  if (!n) { list.innerHTML = '<div class="empty"><div class="empty-icon">&#x1F3DB;&#xFE0F;</div><div style="margin-top:8px;font-size:14px">Nicio autorizatie</div></div>'; return; }
-  list.innerHTML = '';
-  res.forEach(function(r) {
-    var days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
-    var card = document.createElement('div');
-    card.className = 'auth-card';
-    card.style.borderLeftColor = borderAuth(days);
-    card.dataset.id = r.id;
-    card.innerHTML =
-      '<div class="card-top"><div class="auth-name">' + r.beneficiar + '</div>' +
-      '<span class="inst-badge" style="background:' + instColor(r.institutie) + '">' + instShort(r.institutie) + '</span></div>' +
-      '<div class="card-meta">' +
-      (r.nr_autorizatie ? '<span>&#x1F4CB; ' + r.nr_autorizatie + '</span>' : '') +
-      '<span>&#x1F4C5; ' + LUNI[r.luna_expirare - 1] + ' ' + r.an_expirare + '</span></div>' +
-      '<div class="auth-bottom">' + daysBadge(days) +
-      (r.observatii ? '<span class="card-obs">' + r.observatii + '</span>' : '') + '</div>';
-    card.addEventListener('click', function() { openAuthDetail(this.dataset.id); });
-    list.appendChild(card);
-  });
-}
-function setAuthFilter(val) { document.getElementById('auth-filter').value = val; renderAuth(); }
-function showAuthNotifs() {
-  var c = document.getElementById('auth-notifs');
-  var exp = authRecords.filter(function(r) { return !r.finalizata && daysUntilExpiry(r.luna_expirare, r.an_expirare) < 0; });
-  var d15 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d >= 0 && d <= 15; });
-  var d30 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d > 15 && d <= 30; });
-  var d60 = authRecords.filter(function(r) { var d = daysUntilExpiry(r.luna_expirare, r.an_expirare); return !r.finalizata && d > 30 && d <= 60; });
-  c.innerHTML = '';
-  function addB(cls, txt, fv) {
-    var d = document.createElement('div');
-    d.className = 'notif-banner ' + cls; d.textContent = txt;
-    d.addEventListener('click', function() { setAuthFilter(fv); }); c.appendChild(d);
-  }
-  if (exp.length) addB('notif-red',    '\u26A0\uFE0F ' + exp.length + ' autorizatie expirata!', 'expired');
-  if (d15.length) addB('notif-orange', '\u23F0 ' + d15.length + ' expira in < 15 zile', '15');
-  if (d30.length) addB('notif-orange', '\uD83D\uDD14 ' + d30.length + ' expira in < 30 zile', '30');
-  if (d60.length) addB('notif-yellow', '\uD83D\uDCE2 ' + d60.length + ' expira in < 60 zile', '60');
-}
-function openAuthDetail(id) {
-  var r = authRecords.find(function(x) { return x.id === id; });
-  if (!r) return;
-  var days = daysUntilExpiry(r.luna_expirare, r.an_expirare);
-  var el = document.getElementById('auth-detail-content');
-  el.innerHTML = '';
-  var hdr = document.createElement('div'); hdr.className = 'detail-header';
-  hdr.innerHTML = '<div><span class="inst-badge" style="background:' + instColor(r.institutie) + ';display:inline-block">' + r.institutie + '</span><div class="detail-name">' + r.beneficiar + '</div></div>' + daysBadge(days);
-  el.appendChild(hdr);
-  [['Nr. autorizatie', r.nr_autorizatie || '\u2014'], ['Expira', LUNI[r.luna_expirare-1] + ' ' + r.an_expirare + ' (ultima zi)'], ['Observatii', r.observatii || '\u2014']].forEach(function(p) {
-    var row = document.createElement('div'); row.className = 'detail-row';
-    row.innerHTML = '<div class="detail-label">' + p[0] + '</div><div class="detail-val">' + p[1] + '</div>';
-    el.appendChild(row);
-  });
-  var acts = document.createElement('div'); acts.className = 'detail-actions';
-  var eb = document.createElement('button'); eb.className = 'btn-edit'; eb.textContent = '\u270F\uFE0F Editeaza';
-  eb.addEventListener('click', function() { openAuthForm(r.id); });
-  if (!r.finalizata) {
-    var fb = document.createElement('button'); fb.className = 'btn-finalize'; fb.textContent = '\u2705 Finalizeaza';
-    fb.addEventListener('click', function() { finalizeAuth(r.id); });
-    acts.appendChild(eb); acts.appendChild(fb);
-  } else {
-    var ub = document.createElement('button'); ub.className = 'btn-edit'; ub.textContent = '\u21A9 Reactiveaza';
-    ub.addEventListener('click', function() { unfinalizeAuth(r.id); });
-    acts.appendChild(eb); acts.appendChild(ub);
-  }
-  var db = document.createElement('button'); db.className = 'btn-delete'; db.textContent = '\uD83D\uDDD1\uFE0F';
-  db.addEventListener('click', function() { deleteAuth(r.id); });
-  acts.appendChild(db); el.appendChild(acts);
-  document.getElementById('auth-detail-modal').style.display = 'flex';
-}
-document.addEventListener('DOMContentLoaded', function() {
-  var adm = document.getElementById('auth-detail-modal');
-  if (adm) adm.addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
-});
-function renderAuthInstRow() {
-  var el = document.getElementById('auth-inst-row'); el.innerHTML = '';
-  ['Apele Romane', 'A.P.M.'].forEach(function(inst) {
-    var btn = document.createElement('button');
-    btn.className = 'toggle-btn ' + (inst === authInst ? (inst === 'Apele Romane' ? 'sel-ar' : 'sel-apm') : '');
-    btn.style.flex = '1'; btn.textContent = inst;
-    btn.addEventListener('click', function() { authInst = inst; renderAuthInstRow(); });
-    el.appendChild(btn);
-  });
-}
-function renderAuthLunaRow() {
-  var el = document.getElementById('auth-luna-row'); el.innerHTML = '';
-  LUNI.forEach(function(l, i) {
-    var idx = i + 1;
-    var btn = document.createElement('button');
-    btn.className = 'toggle-btn' + (idx === authLuna ? ' sel-blue' : '');
-    btn.textContent = l;
-    btn.addEventListener('click', function() { authLuna = idx; renderAuthLunaRow(); });
-    el.appendChild(btn);
-  });
-}
-function renderAuthAnRow() {
-  var el = document.getElementById('auth-an-row'); el.innerHTML = '';
-  var yr = new Date().getFullYear();
-  [yr-1, yr, yr+1, yr+2, yr+3, yr+4, yr+5, yr+6, yr+7, yr+8, yr+9].forEach(function(y) {
-    var btn = document.createElement('button');
-    btn.className = 'toggle-btn' + (y === authAn ? ' sel-blue' : '');
-    btn.style.flex = '1'; btn.textContent = y;
-    btn.addEventListener('click', function() { authAn = y; renderAuthAnRow(); });
-    el.appendChild(btn);
-  });
-}
-function openAuthForm(id) {
-  id = id || null;
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  authEditId = id;
-  var r = id ? authRecords.find(function(x) { return x.id === id; }) : null;
-  authInst = r ? r.institutie : 'Apele Romane';
-  authLuna = r ? r.luna_expirare : (new Date().getMonth() + 1);
-  authAn   = r ? r.an_expirare  : new Date().getFullYear();
-  document.getElementById('auth-form-title').textContent = id ? 'Editeaza autorizatia' : 'Autorizatie noua';
-  document.getElementById('af-beneficiar').value = r ? r.beneficiar : '';
-  document.getElementById('af-nr').value = r ? (r.nr_autorizatie || '') : '';
-  document.getElementById('af-observatii').value = r ? (r.observatii || '') : '';
-  document.getElementById('auth-save-btn').textContent = id ? 'Salveaza' : 'Adauga';
-  document.getElementById('scan-result').style.display = 'none';
-  var kb = document.getElementById('key-status-btn');
-  if (kb) kb.textContent = getClaudeKey() ? 'Setata' : 'Nesetata';
-  renderAuthInstRow(); renderAuthLunaRow(); renderAuthAnRow();
-  document.getElementById('auth-form-modal').style.display = 'flex';
-}
-function closeAuthForm() { document.getElementById('auth-form-modal').style.display = 'none'; authEditId = null; }
-async function finalizeAuth(id) {
-  authRecords = authRecords.map(function(r) { return r.id === id ? Object.assign({}, r, { finalizata: true }) : r; });
-  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  renderAuth(); showAuthNotifs();
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  if (navigator.onLine) await sb.from('autorizatii').update({ finalizata: true }).eq('id', id);
-}
-
-async function unfinalizeAuth(id) {
-  authRecords = authRecords.map(function(r) { return r.id === id ? Object.assign({}, r, { finalizata: false }) : r; });
-  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  renderAuth(); showAuthNotifs();
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  if (navigator.onLine) await sb.from('autorizatii').update({ finalizata: false }).eq('id', id);
-}
-
-async function deleteAuth(id) {
-  if (!confirm('Stergi aceasta autorizatie?')) return;
-  authRecords = authRecords.filter(function(r) { return r.id !== id; });
-  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  renderAuth(); showAuthNotifs();
-  document.getElementById('auth-detail-modal').style.display = 'none';
-  if (navigator.onLine) await sb.from('autorizatii').delete().eq('id', id);
-}
-async function saveAuth() {
-  var ben = document.getElementById('af-beneficiar').value.trim();
-  if (!ben) return alert('Beneficiarul este obligatoriu.');
-  if (!authLuna) return alert('Luna expirarii este obligatorie.');
-  var payload = { institutie: authInst, beneficiar: ben, nr_autorizatie: document.getElementById('af-nr').value.trim(), luna_expirare: authLuna, an_expirare: authAn, observatii: document.getElementById('af-observatii').value.trim() };
-  var btn = document.getElementById('auth-save-btn');
-  btn.disabled = true; btn.textContent = 'Se salveaza...';
-  if (authEditId) {
-    authRecords = authRecords.map(function(r) { return r.id === authEditId ? Object.assign({}, r, payload) : r; });
-    if (navigator.onLine) await sb.from('autorizatii').update(payload).eq('id', authEditId);
-  } else {
-    var tid = 'tmp_' + Date.now();
-    authRecords.push(Object.assign({}, payload, { id: tid }));
-    if (navigator.onLine) {
-      var ins = await sb.from('autorizatii').insert([payload]).select();
-      if (!ins.error && ins.data) authRecords = authRecords.map(function(r) { return r.id === tid ? ins.data[0] : r; });
-    }
-  }
-  localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-  btn.disabled = false; btn.textContent = authEditId ? 'Salveaza' : 'Adauga';
-  closeAuthForm(); renderAuth(); showAuthNotifs();
-}
-async function scanDocument(input) {
-  var file = input.files[0]; if (!file) return;
-  var rd = document.getElementById('scan-result');
-  rd.style.display = 'block'; rd.textContent = '\u23F3 Se analizeaza...';
-  try {
-    var b64 = await new Promise(function(res, rej) { var fr = new FileReader(); fr.onload = function() { res(fr.result.split(',')[1]); }; fr.onerror = rej; fr.readAsDataURL(file); });
-    var isPdf = file.type === 'application/pdf';
-    var cb = isPdf ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } } : { type: 'image', source: { type: 'base64', media_type: file.type, data: b64 } };
-    var resp = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': getClaudeKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: [cb, { type: 'text', text: 'Extrage: beneficiar, nr autorizatie, luna expirare (1-12), an expirare. Raspunde DOAR JSON: {"beneficiar":"...","nr_autorizatie":"...","luna":5,"an":2026}. Valori negasite: null.' }] }] }) });
-    var data = await resp.json();
-    var parsed = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim());
-    if (parsed.beneficiar) document.getElementById('af-beneficiar').value = parsed.beneficiar;
-    if (parsed.nr_autorizatie) document.getElementById('af-nr').value = parsed.nr_autorizatie;
-    if (parsed.luna) { authLuna = parseInt(parsed.luna); renderAuthLunaRow(); }
-    if (parsed.an) { authAn = parseInt(parsed.an); renderAuthAnRow(); }
-    rd.innerHTML = '\u2705 ' + (parsed.beneficiar||'?') + ' | ' + (parsed.luna ? LUNI[parsed.luna-1] : '?') + ' ' + (parsed.an||'?');
-  } catch(e) { rd.textContent = '\u274C Eroare: ' + e.message; }
-  input.value = '';
-}
-async function importExcel(input) {
-  var file = input.files[0]; if (!file) return;
-  if (!window.XLSX) {
-    await new Promise(function(res, rej) { var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
-  }
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    try {
-      var wb = XLSX.read(e.target.result, { type: 'array' });
-      var luniMap = { 'IANUARIE':1,'FEBRUARIE':2,'MARTIE':3,'APRILIE':4,'MAI':5,'IUNIE':6,'IULIE':7,'IULIE ':7,'AUGUST':8,'SEPTEMBRIE':9,'OCTOMBRIE':10,'NOIEMBRIE':11,'DECEMBRIE':12 };
-      var imported = [];
-      wb.SheetNames.forEach(function(sn) {
-        var an = parseInt(sn); if (isNaN(an)) return;
-        var rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 });
-        if (!rows.length) return;
-        var colToLuna = {};
-        rows[0].forEach(function(cell, ci) {
-          if (!cell) return;
-          var k = String(cell).trim().toUpperCase();
-          if (luniMap[k]) colToLuna[ci] = luniMap[k];
-        });
-        for (var ri = 1; ri < rows.length; ri++) {
-          var row = rows[ri];
-          for (var ci = 0; ci < row.length; ci++) {
-            if (!row[ci] || colToLuna[ci] === undefined) continue;
-            var ben = String(row[ci]).trim(); if (!ben) continue;
-            imported.push({ beneficiar: ben, luna_expirare: colToLuna[ci], an_expirare: an, institutie: 'Apele Romane', nr_autorizatie: '', observatii: '' });
-          }
-        }
-      });
-      if (!imported.length) { alert('Nu am gasit date.'); return; }
-      if (!confirm('Am gasit ' + imported.length + ' autorizatii. Le import?')) return;
-      var btn = document.getElementById('auth-save-btn');
-      btn.textContent = 'Se importa...'; btn.disabled = true;
-      var allIns = [];
-      for (var i = 0; i < imported.length; i += 50) {
-        var batch = imported.slice(i, i + 50);
-        if (navigator.onLine) {
-          var ins = await sb.from('autorizatii').insert(batch).select();
-          if (!ins.error && ins.data) allIns = allIns.concat(ins.data);
-        } else {
-          batch.forEach(function(r) { authRecords.push(Object.assign({}, r, { id: 'tmp_' + Date.now() + Math.random() })); });
-        }
-      }
-      if (allIns.length) authRecords = authRecords.concat(allIns);
-      localStorage.setItem('auth_cache', JSON.stringify(authRecords));
-      btn.textContent = 'Adauga'; btn.disabled = false;
-      closeAuthForm(); renderAuth(); showAuthNotifs();
-      alert('\u2705 ' + imported.length + ' autorizatii importate!');
-    } catch(err) { alert('Eroare: ' + err.message); }
-  };
-  reader.readAsArrayBuffer(file); input.value = '';
-}
-
-// ── BACK BUTTON INTERCEPT ────────────────────────────────
-// ── BACK BUTTON + EXIT ───────────────────────────────────
-var _exitRequested = false;
-history.pushState(null, null, location.href);
-function _backHandler() {
-  if (_exitRequested) {
-    // Suntem în contextul popstate — singura cale prin care Chrome permite închiderea
-    window.close();
-    setTimeout(function(){ window.location.replace('https://cripetre-droid.github.io/'); }, 100);
-    return;
-  }
-  history.pushState(null, null, location.href);
-  document.getElementById('exit-confirm-modal').style.display = 'flex';
-}
-window.addEventListener('popstate', _backHandler);
-function exitApp() {
-  _exitRequested = true;
-  document.getElementById('exit-confirm-modal').style.display = 'none';
-  // Declanșează popstate → _backHandler va apela window.close() din contextul corect
-  history.back();
-}
-
 // Init
 (async()=>{
   const { data: { session } } = await sb.auth.getSession();
@@ -1241,71 +733,11 @@ function exitApp() {
 // Înregistrare Service Worker (necesar pentru instalare PWA)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('/sw.js')
       .then(reg => console.log('SW înregistrat:', reg.scope))
       .catch(err => console.log('SW eroare:', err));
   });
 }
 </script>
-
-<!-- AUTH DETAIL MODAL -->
-<div class="modal-bg" id="auth-detail-modal" style="display:none">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div id="auth-detail-content"></div>
-  </div>
-</div>
-
-<!-- AUTH FORM MODAL -->
-<div class="modal-bg" id="auth-form-modal" style="display:none">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="auth-form-title">Autoriza&#x21B;ie nou&#x103;</div>
-    <div class="key-bar">
-      <span>Claude API Key:</span>
-      <button class="key-btn" id="key-status-btn" onclick="promptClaudeKey()">&#x26A0;&#xFE0F; Nesetat&#x103;</button>
-    </div>
-    <div class="scan-drop" onclick="checkKeyThenScan()">
-      &#x1F4F7; Scaneaz&#x103; / &#xEE;ncarc&#x103; document<br>
-      <span style="font-size:11px;opacity:0.6">Claude va citi automat datele</span>
-    </div>
-    <input type="file" id="scan-input" accept="image/*,application/pdf" style="display:none" onchange="scanDocument(this)" />
-    <div id="scan-result" style="display:none" class="scan-result"></div>
-    <button class="import-btn" onclick="document.getElementById('excel-input').click()">&#x1F4CA; Import din Excel (.xlsx)</button>
-    <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)" />
-    <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
-    <label class="form-label">Institu&#x21B;ie</label>
-    <div class="toggle-row" id="auth-inst-row"></div>
-    <label class="form-label">Beneficiar *</label>
-    <input class="form-input" id="af-beneficiar" placeholder="Denumire beneficiar" />
-    <label class="form-label">Nr. autoriza&#x21B;ie</label>
-    <input class="form-input" id="af-nr" placeholder="ex. AR-2025-001" />
-    <label class="form-label">Luna expir&#x103;rii *</label>
-    <div class="toggle-row" id="auth-luna-row" style="flex-wrap:wrap;gap:6px"></div>
-    <label class="form-label">Anul expir&#x103;rii *</label>
-    <div class="toggle-row" id="auth-an-row"></div>
-    <label class="form-label">Observa&#x21B;ii</label>
-    <textarea class="form-textarea" id="af-observatii" rows="2" placeholder="Observa&#x21B;ii&#x2026;"></textarea>
-    <div class="form-actions">
-      <button class="btn-cancel" onclick="closeAuthForm()">Anuleaz&#x103;</button>
-      <button class="btn-save" id="auth-save-btn" onclick="saveAuth()">Adaug&#x103;</button>
-    </div>
-  </div>
-</div>
-
-<!-- EXIT CONFIRM MODAL -->
-<div class="modal-bg" id="exit-confirm-modal" style="display:none">
-  <div class="modal" style="padding:28px 24px">
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:40px;margin-bottom:12px">👋</div>
-      <div style="font-weight:800;font-size:18px;color:var(--text);margin-bottom:8px">Ieși din aplicație?</div>
-      <div style="font-size:14px;color:var(--muted)">Ești sigur că vrei să închizi aplicația?</div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="document.getElementById('exit-confirm-modal').style.display='none'">Rămân</button>
-      <button class="btn-save" style="flex:1;padding:13px 0" onclick="exitApp()">Ieșire</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
