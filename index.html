@@ -670,6 +670,38 @@ async function finalizeRecord(id) {
   } else {
     enqueue({type:'update', data:{id,...update}});
   }
+  const rec = records.find(r=>r.id===id);
+  if (rec) showTransferModal(rec);
+}
+
+function showTransferModal(rec) {
+  document.getElementById('transfer-name').textContent = rec.beneficiar;
+  document.getElementById('transfer-modal')._rec = rec;
+  document.getElementById('transfer-modal').style.display = 'flex';
+}
+
+function closeTransferModal() {
+  document.getElementById('transfer-modal').style.display = 'none';
+}
+
+function confirmTransfer() {
+  const rec = document.getElementById('transfer-modal')._rec;
+  closeTransferModal();
+  switchTab('autorizatii');
+  authEditId = null;
+  authInst = rec.institutie || 'Apele Romane';
+  authLuna = new Date().getMonth() + 1;
+  authAn = new Date().getFullYear();
+  document.getElementById('auth-form-title').textContent = 'Autorizație nouă';
+  document.getElementById('af-beneficiar').value = rec.beneficiar || '';
+  document.getElementById('af-nr').value = rec.nr_inregistrare || '';
+  document.getElementById('af-observatii').value = '';
+  document.getElementById('auth-save-btn').textContent = 'Adaugă';
+  document.getElementById('scan-result').style.display = 'none';
+  var kb = document.getElementById('key-status-btn');
+  if (kb) kb.textContent = getClaudeKey() ? 'Setata' : 'Nesetata';
+  renderAuthInstRow(); renderAuthLunaRow(); renderAuthAnRow();
+  document.getElementById('auth-form-modal').style.display = 'flex';
 }
 
 async function deleteRecord(id) {
@@ -1212,25 +1244,31 @@ async function importExcel(input) {
   reader.readAsArrayBuffer(file); input.value = '';
 }
 
-// ── BACK BUTTON INTERCEPT ────────────────────────────────
 // ── BACK BUTTON + EXIT ───────────────────────────────────
-var _exitRequested = false;
+var _exitConfirmed = false;
 history.pushState(null, null, location.href);
-function _backHandler() {
-  if (_exitRequested) {
-    // Suntem în contextul popstate — singura cale prin care Chrome permite închiderea
-    window.close();
-    setTimeout(function(){ window.location.replace('https://cripetre-droid.github.io/'); }, 100);
+
+window.addEventListener('popstate', function() {
+  if (_exitConfirmed) {
+    history.back();
     return;
+  }
+  var modalIds = ['form-modal', 'detail-modal', 'auth-detail-modal', 'auth-form-modal'];
+  for (var i = 0; i < modalIds.length; i++) {
+    var m = document.getElementById(modalIds[i]);
+    if (m && m.style.display !== 'none') {
+      m.style.display = 'none';
+      history.pushState(null, null, location.href);
+      return;
+    }
   }
   history.pushState(null, null, location.href);
   document.getElementById('exit-confirm-modal').style.display = 'flex';
-}
-window.addEventListener('popstate', _backHandler);
+});
+
 function exitApp() {
-  _exitRequested = true;
+  _exitConfirmed = true;
   document.getElementById('exit-confirm-modal').style.display = 'none';
-  // Declanșează popstate → _backHandler va apela window.close() din contextul corect
   history.back();
 }
 
@@ -1291,6 +1329,21 @@ if ('serviceWorker' in navigator) {
     <div class="form-actions">
       <button class="btn-cancel" onclick="closeAuthForm()">Anuleaz&#x103;</button>
       <button class="btn-save" id="auth-save-btn" onclick="saveAuth()">Adaug&#x103;</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER TO AUTH MODAL -->
+<div class="modal-bg" id="transfer-modal" style="display:none">
+  <div class="modal" style="padding:28px 24px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:12px">🏛️</div>
+      <div style="font-weight:800;font-size:17px;color:var(--text);margin-bottom:8px">Lucrare finalizată!</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">Adaugi <strong id="transfer-name" style="color:var(--text)"></strong> în lista de Autorizații cu termen de expirare?</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-cancel" style="flex:1;padding:13px 0" onclick="closeTransferModal()">Nu</button>
+      <button class="btn-save" style="flex:1;padding:13px 0" onclick="confirmTransfer()">Da, adaugă</button>
     </div>
   </div>
 </div>
